@@ -1,0 +1,120 @@
+{% load static %}
+{% load update %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Response @ Nested Forms</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg==" crossorigin="anonymous" referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="{% static 'showres.css' %}">
+</head>
+
+<body>
+    <div class="container">
+        <div class="form-details">
+            <h2>{{title}}</h2>
+            <p>{{desc}}</p>
+        </div>
+
+        <div class="userdetails">
+            <p>Name: {{username}}</p>
+            <p>Mail: {{mail}}</p>
+            <p>Phone: {{phone}}</p>
+            <p>Address: {{address}}</p>
+            <p>Created on: {{date}}</p>
+            <p>Marks: </p>
+        </div>
+
+        {% for q,o1,o2,o3,o4,userfilled,rightans,gained,actualmark in data %}
+        <div class="questioncontainer" style="padding:10px;">
+            <h2>{{q}}</h2>
+            {% if userfilled|update:o1 and rightans|update:o1 %}
+                <p style="color:green;">{{o1}}</p>
+            {%elif userfilled|update:o1 and not rightans|update:o1 %}
+                <p style="color:crimson;">{{o1}}</p>
+            {%elif not userfilled|update:o1 and rightans|update:o1 %}
+                <p style="color:purple;">{{o1}}</p>
+            {% else %}
+                <p>{{o1}}</p>
+            {% endif %}
+
+            {% if userfilled|update:o2 and rightans|update:o2 %}
+                <p style="color:green;">{{o2}}</p>
+            {%elif userfilled|update:o2 and not rightans|update:o2 %}
+                <p style="color:crimson;">{{o2}}</p>
+            {%elif not userfilled|update:o2 and rightans|update:o2 %}
+                <p style="color:purple;">{{o2}}</p>
+            {% else %}
+                <p>{{o2}}</p>
+            {% endif %}
+            
+            {% if userfilled|update:o3 and rightans|update:o3 %}
+                <p style="color:green;">{{o3}}</p>
+            {%elif userfilled|update:o3 and not rightans|update:o3 %}
+                <p style="color:crimson;">{{o3}}</p>
+            {%elif not userfilled|update:o3 and rightans|update:o3 %}
+                <p style="color:purple;">{{o1}}</p>
+            {% else %}
+                <p>{{o3}}</p>
+            {% endif %}
+            
+            {% if userfilled|update:o4 and rightans|update:o4 %}
+                <p style="color:green;">{{o4}}</p>
+            {%elif userfilled|update:o4 and not rightans|update:o4 %}
+                <p style="color:crimson;">{{o4}}</p>
+            {%elif not userfilled|update:o4 and rightans|update:o4 %}
+                <p style="color:purple;">{{o4}}</p>
+            {% else %}
+                <p>{{o4}}</p>
+            {% endif %}
+            <h5 style="text-align:right;">Mark: {{gained}}/{{actualmark}}</h5>
+        </div>
+        {% endfor %}
+
+        {% for qus,ans,mark in fdata%}
+            <div class="questioncontainer" style="padding:10px;">
+                <h3>{{qus}}</h3>
+                <p>{{ans}}</p>
+                {% if contact == request.user.email %}
+                <form>
+                <h4>0.0/{{mark}}</h4>
+                <input type="text" name="mvalue" id="inpmark-{{forloop.counter0}}">
+                <button type="button" id="btnmark-{{forloop.counter0}}" onclick="mohit(this.id);">Update Mark</button>
+                </form>
+                {% else %}
+                <h4>0.0/{{mark}}</h4>
+                {% endif %}
+            </div>
+        {% endfor %}
+        
+        
+
+        <div class="footercontent">
+            <h3>Created By: <span style="color:crimson">{{author}}</span></h3>
+            <p>contact: <span style="color:green;font-weight: bold;">{{contact}}</span></p>
+        </div>
+
+        <div class="footer">
+            Copyright &copy; 2021 NestedForms.com | Design Your Forms
+        </div>
+
+    </div>
+
+</body>
+<script>
+    function mohit(id){
+        let a = document.URL.split("/")
+        let token = a[a.length-2];
+        id = id.replace("btnmark","inpmark")
+        console.log(id)
+        value = document.getElementById(id).value;
+        if(value<0 || value>1000)
+        return
+        // make an api and fetch marks / update marks
+    }
+</script>
+</html>

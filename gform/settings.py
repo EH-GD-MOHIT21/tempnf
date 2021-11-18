@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'quizform',
 ]
 
 MIDDLEWARE = [
@@ -155,3 +156,13 @@ STATIC_ROOT = os.path.join(BASE_DIR,'static')
 EMAIL_SENDER = "no.reply.python.py@gmail.com"
 
 PASS_SENDER = "qwerty@123"
+
+CACHE = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
+
+SITE_URL = "http://127.0.0.1:8000/"
+
+VALID_CHARS = [chr(i) for i in range(65,91)]+[str(i) for i in range(0,10)]+[chr(i) for i in range(97,123)] + ["_"]

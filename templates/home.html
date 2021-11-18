@@ -8,21 +8,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page | Nested Forms</title>
     <link rel="stylesheet" href="{% static 'home.css' %}">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css" integrity="sha256-46r060N2LrChLLb5zowXQ72/iKKNiw/lAmygmHExk/o=" crossorigin="anonymous" />
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,400;0,700;0,800;1,400;1,700&amp;display=swap" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js" integrity="sha512-3J8teBiHrSyaaRBajZyIEtpDsXdPq1gsznKWIVb5CnorQuFhjWGhWe54z8YNnHHr7MZuExb9m5kvf964HiT1Sw==" crossorigin="anonymous"></script>
-    <style>
-        .parent {
-            background-image: url("{% static 'formimgs/main.jpg' %}");
-            height: 100vh;
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-    </style>
 </head>
 
 <body>
@@ -101,7 +86,7 @@
 
         <div class="faq">
             <h3 class="faq-tittle">Creator Access Page</h3>
-            <p class="faq-text">Checkout New Creator Access page <a target="_blank" href="https://nestedform.herokuapp.com/creatoraccesspage">Here</a></p>
+            <p class="faq-text">Checkout New Creator Access page <a target="_blank" href="/creatoraccesspage">Here</a></p>
             <button class="faq-toggle">
           <i class="fas fa-chevron-down"></i>
           <i class="fas fa-times"></i>
@@ -123,6 +108,21 @@
         </footer>
 
 </body>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css" integrity="sha256-46r060N2LrChLLb5zowXQ72/iKKNiw/lAmygmHExk/o=" crossorigin="anonymous" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,400;0,700;0,800;1,400;1,700&amp;display=swap" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js" integrity="sha512-3J8teBiHrSyaaRBajZyIEtpDsXdPq1gsznKWIVb5CnorQuFhjWGhWe54z8YNnHHr7MZuExb9m5kvf964HiT1Sw==" crossorigin="anonymous"></script>
+    <style>
+        .parent {
+            background-image: url("{% static 'formimgs/main.jpg' %}");
+            height: 100vh;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+    </style>
 <script>
     var toggles = document.querySelectorAll(".faq-toggle");
     toggles.forEach((toggle) => {

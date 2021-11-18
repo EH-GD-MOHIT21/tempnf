@@ -80,7 +80,8 @@ button {
     font-size: 16px;
 }
 
-.radio-container input[type="radio"] {
+.radio-container input[type="radio"],
+.radio-container input[type="checkbox"] {
     margin-bottom: 25px;
 }
 
@@ -89,7 +90,8 @@ button {
 }
 
 .radio-container label:hover,
-.radio-container input[type="radio"]:hover {
+.radio-container input[type="radio"]:hover,
+.radio-container input[type="checkbox"]:hover {
     cursor: pointer;
 }
 

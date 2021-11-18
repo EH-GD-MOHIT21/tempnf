@@ -4,8 +4,153 @@
     box-sizing: border-box;
 }
 
-.container {
+body {
+    background: #667db6;
+    /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #667db6, #0082c8, #0082c8, #667db6);
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #667db6, #0082c8, #0082c8, #667db6);
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+img {
+    position: absolute;
+    width: 200px;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 100%;
+}
+
+form {
+    margin-top: 80px;
+}
+
+.wrappercontent {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.containerm {
     width: 800px;
-    border: 2px solid black;
     border-radius: 6px;
+    display: block;
+    margin: 20px auto !important;
+    margin-top: 100px !important;
+    border-radius: 5px;
+    background: rgb(18, 172, 243);
+    border: 1px solid black;
+    box-shadow: 0 25px 45px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(25px);
+}
+
+input {
+    width: 300px;
+    display: block;
+    margin: 30px auto !important;
+    height: 30px;
+    border: none;
+    border-bottom: 1px solid black;
+    outline: none;
+    font-size: 20px !important;
+    text-align: center;
+    background: none;
+}
+
+.wrappernames,
+.passwrapper {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.btnmc {
+    margin-top: 20px !important;
+    margin-bottom: 30px !important;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.btnmc button {
+    padding: 10px 10px;
+    border-radius: 7px;
+    outline: none;
+    border: 1.6px solid gray;
+}
+
+input[type="email"],
+input[type="number"] {
+    width: 600px;
+}
+
+input:focus {
+    border-bottom: 2px solid black;
+}
+
+::placeholder {
+    color: purple;
+}
+
+input:focus::-webkit-input-placeholder {
+    color: black;
+}
+
+input:focus:-moz-placeholder {
+    color: black;
+}
+
+input:focus::-moz-placeholder {
+    color: black;
+}
+
+input:focus:-ms-input-placeholder {
+    color: black;
+}
+
+.footerid {
+    display: block;
+    margin: 30px auto !important;
+    text-align: center;
+}
+
+a {
+    color: purple !important;
+}
+
+.footerid a {
+    color: white !important;
+}
+
+@media(max-width:800px) {
+    .containerm {
+        width: 98%;
+    }
+}
+
+@media(max-width:660px) {
+    input,
+    .wrappernames,
+    .passwrapper {
+        display: block;
+    }
+    input {
+        width: 85% !important;
+    }
+    form {
+        margin-top: 120px;
+    }
+}
+
+@media(max-width:400px) {
+    .btnmc {
+        flex-direction: column;
+        margin: 20px auto !important;
+    }
+    .btnmc button {
+        margin-top: 20px;
+    }
 }

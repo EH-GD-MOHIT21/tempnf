@@ -12,45 +12,46 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js" integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ==" crossorigin="anonymous"></script>
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
 
 </head>
 
 <body>
-    <div class="container">
+    <div class="wrappercontent">
+        <div class="containerm">
 
-        <div class="cont1">
+            <div class="cont1">
+                <img src="{% static 'formimgs/admin.png' %}">
 
-            <h2 style="text-align: center;margin: 10px auto;">Nested Forms</h2>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="wrappernames">
+                        <div class="child-div"><input type="text" id="first_name" placeholder="First Name" name="name" required></div>
+                        <div class="child-div"><input type="text" id="last_name" placeholder="Last Name" name="name" required></div>
+                    </div>
+                    <div class="child-div"><input type="email" placeholder="Mail id" id="email" name="email" required></div>
+                    <div class="passwrapper">
+                        <div class="child-div"><input placeholder="Password" id="password" type="password" name="password" required></div>
+                        <div class="child-div"><input type="password" placeholder="Repassword" name="cpassword" id="cpassword" required></div>
+                    </div>
+                    <input type="number" placeholder="otp" id="otp" name="otp" style="display:none;">
 
-            <form action="/verify/register" method="POST">
-                {% csrf_token %}
-                <div class="child-div"><input type="text" placeholder="Full Name" name="name" required></div>
-                <div class="child-div"><input type="email" placeholder="Mail id" id="email" name="email" required></div>
-                <div class="btncntr" style="text-align: center;">
-                    <button type="button" id="otpgen" style="cursor: pointer;">Generate OTP</button>
-                </div>
-                <div class="child-div"><input placeholder="Password" type="password" name="password" required></div>
-                <div class="child-div"><label for="">Re Pass: </label><input type="password" name="cpassword" required></div>
-                <div class="child-div"><label for="">Phone no: </label><input type="number" name="phoneno" required></div>
-                <div class="child-div"><label for="">Age: </label><input type="number" name="age" required></div>
-                <div class="child-div"><label for="">OTP: </label><input type="number" name="otp" required></div>
-                <div class="btnmc" style="display: flex;justify-content: space-between;">
-                    <a id="hmegt" href="/" style="display: block;padding: 12px 20px;margin: 10px 0px;">Go to Home</a>
-                    <button type="submit" id="Proceed" style="cursor: pointer;">Proceed</button>
-                </div>
-            </form>
+                    <div class="btnmc">
+                        <a href="/login">Already have an account? Login Here</a>
+                        <button type="button" id="signbtn" style="cursor: pointer;"><span class="spinner-border spinner-border-sm" id="spinner" style="display: none;" role="status" aria-hidden="true"></span>Proceed</button>
+                    </div>
+                </form>
+
+            </div>
+
         </div>
-
-        <div class="btns">
-            <a href="/login">Already have an account? Login Here</a>
-        </div>
-
     </div>
-
     <div class="footerid">
-        <footer>Copyright &copy; 2021 | NestedForms.com</footer>
+        <footer>Copyright &copy; 2021 | <a href="/">NestedForms.com</a></footer>
     </div>
 </body>
-<script src="{% static 'void.js' %}"></script>
+<script src="{% static 'mainreg.js' %}"></script>
 
 </html>

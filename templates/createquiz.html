@@ -1,0 +1,148 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Quiz @ Nested Forms.com</title>
+    <script src="https://kit.fontawesome.com/e8425439af.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{% static 'index.css' %}">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+</head>
+
+<body>
+    <!-- <marquee behavior="" direction="left">Welcome User to NestedForms.com click on <i class="fas fa-plus-circle"></i> icon to add more Questions to your set and respectively click on <i class="fas fa-minus-circle"></i> icon to remove a Question.</marquee> -->
+    <form action="/savequiz" method="POST">
+        {% csrf_token %}
+        <div class="container-headings">
+            <h1>NestedForms</h1>
+            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nam perferendis quam earum maiores perspiciatis labore placeat praesentium, totam vero fugiat voluptatibus minus pariatur enim sint voluptas quidem architecto esse! Est in corrupti
+                molestias exercitationem quaerat omnis libero asperiores accusantium aliquid?</p>
+        </div>
+
+        <div class="container">
+
+            <textarea name="formtitle" id="Form-title" required placeholder="Enter Quiz's Title Here"></textarea>
+
+            <input type="text" name="creatorname" required class="other-data" placeholder="Enter Creator's Name">
+
+            <input type="text" name="mail" class="other-data" required placeholder="Enter Creator's Mail Id" value={{user.username}} disabled>
+
+            <textarea name="formdesc" id="Form-Desc" required placeholder="Enter Quiz's Description"></textarea>
+
+        </div>
+
+
+        <div id="outer">
+            <div class="question-prototype">
+                <textarea name="questionmcq" class="question-box" required placeholder="Enter Your Question Here"></textarea>
+                <!-- <input type="text" class="question-box" placeholder="Enter Your Question Here"> -->
+                <div class="main-icoinput">
+                    <input type="hidden" name="radio1" id="cr1f" value=0>
+                    <input type="checkbox" id="cr1" onchange=mohit(this.id)>
+                    <input required type="text" class="option-box" name="option1" placeholder="option A">
+                </div>
+                <div class="main-icoinput">
+                    <input type="hidden" name="radio2" id="cr2f" value=0>
+                    <input type="checkbox" id="cr2" onchange=mohit(this.id)>
+                    <input type="text" class="option-box" name="option2" placeholder="option B">
+                </div>
+                <div class="main-icoinput">
+                    <input type="hidden" name="radio3" id="cr3f" value=0>
+                    <input type="checkbox" id="cr3" onchange=mohit(this.id)>
+                    <input type="text" class="option-box" name="option3" placeholder="option C">
+                </div>
+                <div class="main-icoinput">
+                    <input type="hidden" name="radio4" id="cr4f" value=0>
+                    <input type="checkbox" id="cr4" onchange=mohit(this.id)>
+                    <input type="text" class="option-box" name="option4" placeholder="option D">
+                </div>
+                <div class="main-icoinput" style="text-align:right;">
+                    Marks:
+                    <input type="number" oninput="impmohit(this.value,this.id)" class="option-box" name="markmcq" placeholder="enter question marks" value=1 id="impmohit1">
+                </div>
+                <button type="button" class="delbtn" onclick="this.parentElement.remove();">delete</button>
+            </div>
+
+            <div class="question-prototype">
+                <textarea name="ftp" class="question-box" required placeholder="Enter Your Question Here(Written ans type)"></textarea>
+                <div class="main-icoinput" style="text-align:right;">
+                    Marks:
+                    <input type="number" oninput="impmohit(this.value,this.id)" class="option-box" name="markfilltype" placeholder="enter question marks" value=1 id="impmohit2">
+                </div>
+                <button type="button" class="delbtn" onclick="this.parentElement.remove();">delete</button>
+            </div>
+        </div>
+
+
+        <div class="btnsholder">
+            <button type="button" id="content-adderbutton">Add mcq</button>
+            <button type="Submit" class="mainbutton">Generate Token</button>
+            <button type="button" id="content-adderbuttonftp">Add filltype</button>
+        </div>
+    </form>
+
+
+    <footer id="footer-tag">Developed By Mohit Satija &copy; 2021 | All Rights Reserved</footer>
+</body>
+<script src="{% static 'quizscript.js' %}"></script>
+<style>
+    #content-adderbutton,
+    #content-adderbuttonftp {
+        border-radius: 7px;
+        color: white;
+        padding: 8px 15px;
+        background: #5f27cd;
+        font-size: 16px;
+        border-width: 2px;
+        cursor: pointer;
+        border-style: outset;
+        border-color: rgb(118, 118, 118);
+        border-image: initial;
+    }
+    
+    .delbtn {
+        display: block;
+        margin: 20px auto;
+        padding: 6px 15px;
+        font-size: 14px;
+        color: white;
+        background: crimson;
+        border: none;
+        outline: none;
+        border-radius: 4px;
+        letter-spacing: 0.02rem;
+        cursor: pointer;
+    }
+</style>
+<script>
+    function mohit(id) {
+        this.id = id;
+        try {
+            if (parseInt(document.getElementById(this.id + "f").value) == 0) {
+                (document.getElementById(this.id + "f").value = 1)
+            } else {
+                (document.getElementById(this.id + "f").value = 0)
+            }
+        } catch (err) {}
+    }
+
+    function impmohit(value, id) {
+        if (document.getElementById("impmohit1").value == '') {
+            document.getElementById(id).value = 0;
+            alert("Question marks either positive or zero it'll be terminated in backend.")
+        }
+        if (parseInt(value) < 0) {
+            document.getElementById(id).value = 0;
+            alert("Question marks either positive or zero it'll be terminated in backend.")
+        }
+        if (parseInt(value) > 1000) {
+            document.getElementById(id).value = 1000;
+            alert("Question marks can be maximum 1000.")
+        }
+    }
+</script>
+
+</html>

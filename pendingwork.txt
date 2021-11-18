@@ -1,0 +1,18 @@
+add date of form created in quiz and normal form both
+modify creator access page add quiz response also add django pagination if possible
+add custom option of marks while creating a quiz
+
+
+
+
+
+to be updated
+
+match user response with exact responses
+Generate spreadsheet according to user names and marks
+Generate spreadsheet according to questions and responses
+
+
+if possible
+
+in survey type forms add functionality to pie chart like graphs to show ui.

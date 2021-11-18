@@ -1,0 +1,36 @@
+{% load static %}
+{% load index %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Quizes @ NestedForm</title>
+    <link rel="stylesheet" href="{% static 'creator.css' %}">
+</head>
+
+<body>
+    <div class="container">
+        {% for id,res in data %}
+        <div class="child1">
+            <div class="constpart">
+                <p>Quiz Id: {{id}}</p>
+                <h3>Responses: {{res}}</h3>
+            </div>
+            <div class="wrapperconstpart">
+                {% for data in resdata|index:forloop.counter0 %}
+                <div class="childconstpart">
+                    <li>{{data}}</li>
+                    <a href="showquizresponses/{{id}}/filter?email={{data}}">View Response</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <h4>{{mail}} is recorded while creating Form.</h4>
+</body>
+
+</html>

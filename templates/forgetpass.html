@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Recovery @ NestedForms.com</title>
+    <style>
+        body {
+            background: #667db6;
+            background: -webkit-linear-gradient(to right, #667db6, #0082c8, #0082c8, #667db6);
+            background: linear-gradient(to right, #667db6, #0082c8, #0082c8, #667db6);
+        }
+        
+        .wrapperclass {
+            position: relative;
+            padding: 30px;
+            border: 1px solid black;
+            border-radius: 5 px;
+            background: rgb(18, 172, 243);
+            border: 1 px solid black;
+            box-shadow: 0 25px 45px rgb(0 0 0 / 25%);
+            backdrop-filter: blur(25 px);
+        }
+        
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        
+        input,
+        button {
+            display: block;
+            margin: 10px auto;
+        }
+        
+        input {
+            outline: none;
+            width: 300px;
+            font-size: 16px;
+            height: 30px;
+            border-radius: 3px;
+            padding: 4px 10px;
+        }
+        
+        button {
+            padding: 4px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        img {
+            position: absolute;
+            width: 200px;
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 100%;
+        }
+        
+        .extra {
+            margin-top: 80px;
+        }
+        
+        @media(max-width:400px) {
+            input {
+                width: calc(95% - 10px);
+            }
+            .wrapperclass {
+                padding: 10px;
+            }
+            .extra {
+                margin-top: 100px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="container">
+            <div class="wrapperclass">
+                <img src="{% static 'formimgs/admin.png' %}">
+                <div class="extra">
+                    <h3 style="text-align: center;">Password Recovery <a href="/">Nested Forms</a></h3>
+                    <input placeholder="Enter Your Mail Id." type="email" id="email">
+                    <a href="/login">Remember Password?</a>
+                    <button type="button" id="sbtn">Validate</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    async function mohit() {
+        let response = await fetch('/forgotpassApi', {
+            credentials: 'include',
+            method: 'POST',
+            mode: 'same-origin',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "email": document.getElementById("email").value
+            })
+        })
+        if (response.ok) {
+            // document.getElementById('spinnerhandler').style.display = 'none';
+            // document.getElementById("verifier").style.display = 'block';
+            let json = await response.json();
+            let message = json["message"]
+            alert(message);
+        } else {
+            alert("HTTP-Error: " + response.status);
+        }
+    }
+    document.getElementById("sbtn").addEventListener("click", mohit);
+</script>
+
+</html>

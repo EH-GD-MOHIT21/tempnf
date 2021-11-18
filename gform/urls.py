@@ -23,5 +23,6 @@ urlpatterns = [
     path('blob/nestedforms/developer/adminpanel', admin.site.urls),
     path('',include('mainapp.urls')),
     path('',include('usermanager.urls')),
+    path('',include('quizform.urls')),
     url(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT})
 ]

@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Recovery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #667db6;
+            /* fallback for old browsers */
+            background: -webkit-linear-gradient(to right, #667db6, #0082c8, #0082c8, #667db6);
+            /* Chrome 10-25, Safari 5.1-6 */
+            background: linear-gradient(to right, #667db6, #0082c8, #0082c8, #667db6);
+            /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+        }
+        
+        .wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            position: relative;
+            border: 1px solid black;
+            padding: 30px;
+            border-radius: 5px;
+            background: rgb(18, 172, 243);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(25px);
+        }
+        
+        form {
+            margin-top: 100px;
+        }
+        
+        input {
+            display: block;
+            width: 350px;
+            height: 35px;
+            outline: none;
+            margin: 10px auto;
+            padding-left: 35px;
+            padding-right: 35px;
+            font-size: 16px;
+            border-radius: 3px;
+            border: 1px solid black;
+        }
+        
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 5px 30px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        img {
+            position: absolute;
+            width: 200px;
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 100%;
+        }
+        
+        .personal {
+            position: absolute;
+            top: 43.5%;
+            left: 9%;
+        }
+        
+        .inputlogo {
+            top: 57.5%;
+        }
+        
+        @media(max-width:420px) {
+            input {
+                width: calc(95% - 10px);
+            }
+            .container {
+                padding: 10px;
+            }
+            .personal {
+                top: 42.5;
+                left: 10%;
+            }
+            .inputlogo {
+                top: 58.5%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="container">
+            <img src="{% static 'formimgs/admin.png' %}">
+            <form action="#" method="post" id="form">
+                {% csrf_token %}
+                <i class="fas fa-lock personal" style='font-size:24px'></i>
+                <input placeholder="Enter Strong Password" type="password" name="pass">
+                <i class="fas fa-lock inputlogo personal" style='font-size:24px'></i>
+                <input placeholder="ReEnter Strong Password" type="password" name="cpass">
+                <button>change password</button>
+            </form>
+        </div>
+    </div>
+</body>
+<script>
+    user = document.URL.split("/")[document.URL.split("/").length - 2]
+    token = document.URL.split("/")[document.URL.split("/").length - 1]
+    path = "/changepass/" + user + "/" + token
+    document.getElementById("form").action = path;
+</script>
+<script src="https://kit.fontawesome.com/e8425439af.js" crossorigin="anonymous"></script>
+
+</html>
