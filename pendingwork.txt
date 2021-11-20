@@ -3,9 +3,6 @@ modify creator access page add quiz response also add django pagination if possi
 add custom option of marks while creating a quiz
 
 
-
-
-
 to be updated
 
 match user response with exact responses
@@ -16,3 +13,9 @@ Generate spreadsheet according to questions and responses
 if possible
 
 in survey type forms add functionality to pie chart like graphs to show ui.
+
+
+
+to be change 
+
+check mcq at the time of submit not the time of shown response

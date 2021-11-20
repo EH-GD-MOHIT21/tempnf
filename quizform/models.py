@@ -22,7 +22,7 @@ class QuizManager(models.Model):
 
 class QuizMCQquestions(models.Model):
     code = models.ForeignKey(QuizManager,on_delete=models.CASCADE)
-    marks = models.IntegerField(default=0)
+    marks = models.FloatField(default=0)
     question = models.TextField()
     option1 = models.TextField()
     option2 = models.TextField()
@@ -45,7 +45,7 @@ class QuizMCQAnswers(models.Model):
 
 class QuizFillTypeQuestions(models.Model):
     code = models.ForeignKey(QuizManager,on_delete=models.CASCADE)
-    marks = models.IntegerField(default=0)
+    marks = models.FloatField(default=0)
     question = models.TextField()
     def __str__(self):
         return str(self.code)
@@ -66,8 +66,10 @@ class base_submitted_form_data(models.Model):
 class FillTypeUserResponses(models.Model):
     code = models.ForeignKey(base_submitted_form_data,on_delete=models.CASCADE)
     answer = models.TextField()
+    final_marks = models.FloatField(default=0)
 
 
 class MCQTypeUserResponses(models.Model):
     code = models.ForeignKey(base_submitted_form_data,on_delete=models.CASCADE)
     answer = models.TextField()
+    final_marks = models.FloatField(default=0)

@@ -1,7 +1,11 @@
+from django.db.models import base
 from django.shortcuts import redirect, render
 from .app_utils.model_manager import *
 from .models import *
 import ast
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
@@ -14,13 +18,21 @@ def RenderCreateQuiz(request):
 
 def SaveQuiz(request):
     if request.method == "POST" and request.user.is_authenticated:
+        marks = request.POST.getlist("markmcq")
+        for mark in marks:
+            try:
+                mark = float(mark)
+                if mark < 0 or mark > 1000:
+                    return render(request,'confirm.html',{'message':'Invalid marks provided.'})
+            except:
+                return render(request,'confirm.html',{'message':'Invalid marks provided.'})
         token,model = QuizManagerObjectCreator(request)
         MCQTypeQuestionSaver(request,model)
         FillTypeQuestionSaver(request,model)
         # ans of quizes may be empty
         MCQTypeAnswerSaver(request,model)
         print(token)
-        return redirect('/createquiz')
+        return render(request,'logshower.html',{'quizid':token,'quiz':True})
     else:
         return redirect('/login')
 
@@ -31,7 +43,7 @@ def FillQuiz(request,quiz_id):
 
     try:
         base_submitted_form_data.objects.get(token=quiz_id,email=request.user.email)
-        return redirect('/')
+        return render(request,'confirm.html',{'message':'You have already responded.'})
     except:
         pass
 
@@ -106,7 +118,7 @@ def SaveQuizResposnes(request,quiz_id):
     # fill type answers
     try:
         base_submitted_form_data.objects.get(token=quiz_id,email=request.user.email)
-        return redirect('/')
+        return render(request,'confirm.html',{'message':'You have already responded.'})
         # show you have already responded
     except:
         pass
@@ -143,7 +155,7 @@ def SaveQuizResposnes(request,quiz_id):
         except:
             break
 
-    return redirect('/fillquiz/UzKcvzr4h7aeZh2M1xEp4KEDYjmcgAwQDV4F0c7jTchqH1NLLssW96R1h2021_11_18_16_44_02_961052')
+    return redirect('/')
 
 
 
@@ -151,7 +163,7 @@ def ManageQuizes(request):
     if not request.user.is_authenticated:
         return redirect('/login')
     quizzes_codes = []
-    all_quizes = base_submitted_form_data.objects.filter(email=request.user.email)
+    all_quizes = QuizManager.objects.filter(mail=request.user.email)
     for quiz in all_quizes:
         quizzes_codes.append(quiz.token)
     
@@ -219,8 +231,11 @@ def showresponses(request,quiz_id):
         filltype = []
 
         filltypesubmitted = FillTypeUserResponses.objects.filter(code=responses_obj)
+        filltypeusermarks = []
         for obj in filltypesubmitted:
             filltype.append(obj.answer)
+            filltypeusermarks.append(obj.final_marks)
+    
 
         mcqtypesubmitted = MCQTypeUserResponses.objects.filter(code=responses_obj)
         real_ans = QuizMCQAnswers.objects.filter(code=quiz)
@@ -234,14 +249,24 @@ def showresponses(request,quiz_id):
             mark = 0
             userfilled = ast.literal_eval(obj.answer)
             right_ans = ast.literal_eval(real_ans[index].answers)
-            print(userfilled,right_ans)
+            
             mymcqans.append(userfilled)
             rightmcqans.append(right_ans)
 
             for value in userfilled:
                 if value in right_ans and value != '':
                     mark += (marks[index]/len(right_ans))
+
             gained_marks.append(mark)
+
+        
+        total_valid_ftpemarks = sum(fmarks)
+        total_earned_ftypemarks = sum(filltypeusermarks)
+        total_valid_mcqmarks = sum(marks)
+        total_earned_mcqmarks = sum(gained_marks)
+
+        totalmarks = total_valid_mcqmarks + total_valid_ftpemarks
+        totalearned = total_earned_mcqmarks + total_earned_ftypemarks
         
         # permission <<<->>>
 
@@ -251,15 +276,83 @@ def showresponses(request,quiz_id):
         fqus,fmarks,filltype
         '''
 
-        fdata = zip(fqus,filltype,fmarks)
+        fdata = zip(fqus,filltype,fmarks,filltypeusermarks)
         data = zip(questions,option1,option2,option3,option4,mymcqans,rightmcqans,gained_marks,marks)
 
 
         if (email == request.user.username) or (quiz.mail==request.user.username) or (request.user.is_superuser):
-            return render(request,'quizresponse.html',{'title':title,'desc':desc,'author':author,'contact':contact,'data':data,'username':username,'mail':mail,'phone':phone,'address':address,'date':date,'fdata':fdata})
+            return render(request,'quizresponse.html',{'title':title,'desc':desc,'author':author,'contact':contact,'data':data,'username':username,'mail':mail,'phone':phone,'address':address,'date':date,'fdata':fdata,'totalmarks':totalmarks,'totalearned':totalearned})
         
         return render(request,'confirm.html',{'message':'You Cannot see someone others responses.'})
 
     except Exception as e:
         print(e)
         return redirect('/')
+
+
+@csrf_exempt
+def update_mark_filltype_Api(request):
+    body = json.loads(request.body)
+
+    if not request.user.is_authenticated:
+        return JsonResponse({'status':403,'message':'User Not authenticated'})
+
+    quiz_id = body.get("quiz_id")
+    qus_id = body.get("qus_id")
+    marks = body.get("marks")
+    usermail = body.get("usermail")
+    email = request.user.email
+
+    try:
+        marks = float(marks)
+    except:
+        return JsonResponse({'status':400,'message':'Invalid Value for marks.'})
+
+    if marks == None or marks == '' or marks < 0 or marks > 1000:
+        return JsonResponse({'status':406,"message":"marks can be between 0-1000 "})
+
+    try:
+        quizmanager = QuizManager.objects.get(token=quiz_id)
+        if quizmanager.mail != email:
+            return JsonResponse({'status':400,'message':'You do not have permissions to change marks.'})
+        quizqus = QuizFillTypeQuestions.objects.filter(code=quizmanager).order_by("id")
+        
+        base_form = base_submitted_form_data.objects.get(token=quiz_id,email=usermail)
+        ftresponse = FillTypeUserResponses.objects.filter(code=base_form).order_by("id")
+        finalchangeablemodel = ftresponse[int((qus_id).split('-')[1])]
+        print(finalchangeablemodel)
+        max_marks = quizqus[int((qus_id).split('-')[1])].marks
+
+        if float(marks) <= float(max_marks):
+            finalchangeablemodel.final_marks = marks
+            finalchangeablemodel.save()
+            return JsonResponse({'status':200,'message':'success'})
+        
+        return JsonResponse({'status':400,'message':'max marks can not be less than provided.'})
+        # get_marks = 
+    except Exception as e:
+        print(e)
+        return JsonResponse({'status':400,'message':'No quiz or response exists with provided details.'})
+
+
+@csrf_exempt
+def delete_quiz_api(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status':403,'message':'User Not authenticated.'})
+    body = json.loads(request.body)
+    quiz_id = body.get("quiz_id")
+    email = body.get("email")
+
+    try:
+        QuizManager.objects.get(token=quiz_id,mail=email).delete()
+    except:
+        return JsonResponse({'status':406,'message':'Quiz Doesnot exists or you donot have permission to delete quiz.'})
+
+    try:
+        base_submitted_form_data.objects.get(token=quiz_id,email=email).delete()
+    except:
+        pass
+
+    return JsonResponse({'status':200,'message':'success'})
+
+    # complete it.
