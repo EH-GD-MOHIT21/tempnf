@@ -122,6 +122,12 @@ def SaveQuizResposnes(request,quiz_id):
         # show you have already responded
     except:
         pass
+
+    marks = []
+    for elm in QuizMCQquestions.objects.filter(code=code):
+        marks.append(elm.marks)
+
+    print(marks)
         
     model = base_submitted_form_data()
     model.token = quiz_id
@@ -150,12 +156,22 @@ def SaveQuizResposnes(request,quiz_id):
             mcqtype = MCQTypeUserResponses()
             mcqtype.code = model
             mcqtype.answer = option
+            # check here mcq type qus
+            real_ans = ast.literal_eval(QuizMCQAnswers.objects.filter(code=code)[j].answers)
+            mark = 0
+            print(option,real_ans)
+            for value in option:
+                if value in real_ans and value != '':
+                    mark += (marks[j]/len(real_ans))
+
+            mcqtype.final_marks = mark
             mcqtype.save()
             j+=1
-        except:
+        except Exception as e:
+            print(e)
             break
 
-    return redirect('/')
+    return render(request,'confirm.html')
 
 
 
@@ -199,17 +215,14 @@ def showresponses(request,quiz_id):
         date = quiz.date
 
         responses_obj = base_submitted_form_data.objects.get(token=quiz_id,email=email)
-        
         fmcqs = QuizMCQquestions.objects.filter(code=quiz)
         filltypequs = QuizFillTypeQuestions.objects.filter(code=quiz)
 
         fqus = []
         fmarks = []
-
         for qus in filltypequs:
             fqus.append(qus.question)
             fmarks.append(qus.marks)
-
         questions = []
         option1 = []
         option2 = []
@@ -236,7 +249,6 @@ def showresponses(request,quiz_id):
             filltype.append(obj.answer)
             filltypeusermarks.append(obj.final_marks)
     
-
         mcqtypesubmitted = MCQTypeUserResponses.objects.filter(code=responses_obj)
         real_ans = QuizMCQAnswers.objects.filter(code=quiz)
 
@@ -246,18 +258,11 @@ def showresponses(request,quiz_id):
         rightmcqans = []
         
         for index,obj in enumerate(mcqtypesubmitted):
-            mark = 0
             userfilled = ast.literal_eval(obj.answer)
             right_ans = ast.literal_eval(real_ans[index].answers)
-            
             mymcqans.append(userfilled)
             rightmcqans.append(right_ans)
-
-            for value in userfilled:
-                if value in right_ans and value != '':
-                    mark += (marks[index]/len(right_ans))
-
-            gained_marks.append(mark)
+            gained_marks.append(obj.final_marks)
 
         
         total_valid_ftpemarks = sum(fmarks)
@@ -267,18 +272,11 @@ def showresponses(request,quiz_id):
 
         totalmarks = total_valid_mcqmarks + total_valid_ftpemarks
         totalearned = total_earned_mcqmarks + total_earned_ftypemarks
-        
-        # permission <<<->>>
-
-        '''
-        questions,option1-4
-        mymcqans,rightmcqans,gained_marks,marks,
-        fqus,fmarks,filltype
-        '''
 
         fdata = zip(fqus,filltype,fmarks,filltypeusermarks)
         data = zip(questions,option1,option2,option3,option4,mymcqans,rightmcqans,gained_marks,marks)
 
+        # permission <<<->>>
 
         if (email == request.user.username) or (quiz.mail==request.user.username) or (request.user.is_superuser):
             return render(request,'quizresponse.html',{'title':title,'desc':desc,'author':author,'contact':contact,'data':data,'username':username,'mail':mail,'phone':phone,'address':address,'date':date,'fdata':fdata,'totalmarks':totalmarks,'totalearned':totalearned})
@@ -356,3 +354,21 @@ def delete_quiz_api(request):
     return JsonResponse({'status':200,'message':'success'})
 
     # complete it.
+
+@csrf_exempt
+def delete_response_api(request):
+    if not request.user.is_authenticated or not request.method=="POST":
+        return JsonResponse({'status':400,'message':'Invalid Request.'})
+    body = json.loads(request.body)
+    quiz_id = body.get("quiz_id")
+    email_del_res = body.get("email")
+    try:
+        QuizManager.objects.get(token=quiz_id,mail=request.user.email)
+    except:
+        return JsonResponse({'status':404,'message':'quiz not found.'})
+    try:
+        user_res = base_submitted_form_data.objects.get(token=quiz_id,email=email_del_res)
+        user_res.delete()
+        return JsonResponse({'status':200,'message':'success'})
+    except:
+        return JsonResponse({'status':404,'message':'User response not exists.'})

@@ -61,6 +61,9 @@ class base_submitted_form_data(models.Model):
     phone_no = models.CharField(max_length=12)
     address = models.CharField(max_length=100)
 
+    def __str__(self):
+        return "QuizId: "+self.token
+
 
 
 class FillTypeUserResponses(models.Model):
@@ -68,8 +71,14 @@ class FillTypeUserResponses(models.Model):
     answer = models.TextField()
     final_marks = models.FloatField(default=0)
 
+    def __str__(self):
+        return str(self.code)
+
 
 class MCQTypeUserResponses(models.Model):
     code = models.ForeignKey(base_submitted_form_data,on_delete=models.CASCADE)
     answer = models.TextField()
     final_marks = models.FloatField(default=0)
+
+    def __str__(self):
+        return str(self.code)

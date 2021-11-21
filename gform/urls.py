@@ -26,4 +26,5 @@ urlpatterns = [
     path('',include('quizform.urls')),
     url(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}),
     path('',include('dataanal.urls')),
+    path('',include('surveys.urls')),
 ]

@@ -1,0 +1,34 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #d1c4e9;
+}
+
+.container {
+    width: 600px;
+    display: block;
+    margin: 20px auto;
+    border-radius: 10px;
+}
+
+.form-basic-details {
+    border-top: 10px solid #00bcd4;
+    background: white;
+    border-radius: 10px;
+    margin: 15px auto;
+}
+
+.wrapperpielegends {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.piechartwrapper {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}

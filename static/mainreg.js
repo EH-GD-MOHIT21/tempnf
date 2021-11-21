@@ -27,7 +27,6 @@ async function mohit() {
         // document.getElementById("verifier").style.display = 'block';
         let json = await response.json();
         let message = json["message"]
-        alert(message);
         if (message == 'otp send.' || message == "Otp Already send please wait for 5 minutes for resend.") {
             document.getElementById("otp").style.display = "block";
             try {
@@ -56,7 +55,6 @@ async function mohit() {
                     // document.getElementById("verifier").style.display = 'block';
                     let json = await response.json();
                     let message = json["message"]
-                    alert(message);
                     if (message == 'success') {
                         window.location.replace('/')
                     }

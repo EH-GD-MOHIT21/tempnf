@@ -27,49 +27,55 @@
             <p>Address: {{address}}</p>
             <p>Created on: {{date}}</p>
             <p>Marks: <span style="color:green;font-weight: 600;"><span id="qtotalearned">{{totalearned}}</span>/{{totalmarks}}</span></p>
+            <p>
+                <i class="fa fa-circle" aria-hidden="true" style="color:green"> Correct and selected</i>
+                <i class="fa fa-circle" aria-hidden="true" style="color:crimson"> Selected but wrong</i>
+                <i class="fa fa-circle" aria-hidden="true" style="color:purple"> Correct but not selected</i>
+                <i class="fa fa-circle-o" aria-hidden="true"> Incorrect but not selected</i>
+            </p>
         </div>
 
         {% for q,o1,o2,o3,o4,userfilled,rightans,gained,actualmark in data %}
         <div class="questioncontainer" style="padding:10px;">
             <h2>{{q}}</h2>
             {% if userfilled|update:o1 and rightans|update:o1 %}
-                <p style="color:green;">{{o1}}</p>
+                <p style="color:green;"><i class="fa fa-circle" aria-hidden="true"></i> {{o1}}</p>
             {%elif userfilled|update:o1 and not rightans|update:o1 %}
-                <p style="color:crimson;">{{o1}}</p>
+                <p style="color:crimson;"><i class="fa fa-circle" aria-hidden="true"></i> {{o1}}</p>
             {%elif not userfilled|update:o1 and rightans|update:o1 %}
-                <p style="color:purple;">{{o1}}</p>
+                <p style="color:purple;"><i class="fa fa-circle" aria-hidden="true"></i> {{o1}}</p>
             {% else %}
-                <p>{{o1}}</p>
+                <p><i class="fa fa-circle-o" aria-hidden="true"></i> {{o1}}</p>
             {% endif %}
 
             {% if userfilled|update:o2 and rightans|update:o2 %}
-                <p style="color:green;">{{o2}}</p>
+                <p style="color:green;"><i class="fa fa-circle" aria-hidden="true"></i> {{o2}}</p>
             {%elif userfilled|update:o2 and not rightans|update:o2 %}
-                <p style="color:crimson;">{{o2}}</p>
+                <p style="color:crimson;"><i class="fa fa-circle" aria-hidden="true"></i> {{o2}}</p>
             {%elif not userfilled|update:o2 and rightans|update:o2 %}
-                <p style="color:purple;">{{o2}}</p>
+                <p style="color:purple;"><i class="fa fa-circle" aria-hidden="true"></i> {{o2}}</p>
             {% else %}
-                <p>{{o2}}</p>
+                <p><i class="fa fa-circle-o" aria-hidden="true"></i> {{o2}}</p>
             {% endif %}
             
             {% if userfilled|update:o3 and rightans|update:o3 %}
-                <p style="color:green;">{{o3}}</p>
+                <p style="color:green;"><i class="fa fa-circle" aria-hidden="true"></i> {{o3}}</p>
             {%elif userfilled|update:o3 and not rightans|update:o3 %}
-                <p style="color:crimson;">{{o3}}</p>
+                <p style="color:crimson;"><i class="fa fa-circle" aria-hidden="true"></i> {{o3}}</p>
             {%elif not userfilled|update:o3 and rightans|update:o3 %}
-                <p style="color:purple;">{{o3}}</p>
+                <p style="color:purple;"><i class="fa fa-circle" aria-hidden="true"></i> {{o3}}</p>
             {% else %}
-                <p>{{o3}}</p>
+                <p><i class="fa fa-circle-o" aria-hidden="true"></i> {{o3}}</p>
             {% endif %}
             
             {% if userfilled|update:o4 and rightans|update:o4 %}
-                <p style="color:green;">{{o4}}</p>
+                <p style="color:green;"><i class="fa fa-circle" aria-hidden="true"></i> {{o4}}</p>
             {%elif userfilled|update:o4 and not rightans|update:o4 %}
-                <p style="color:crimson;">{{o4}}</p>
+                <p style="color:crimson;"><i class="fa fa-circle" aria-hidden="true"></i> {{o4}}</p>
             {%elif not userfilled|update:o4 and rightans|update:o4 %}
-                <p style="color:purple;">{{o4}}</p>
+                <p style="color:purple;"><i class="fa fa-circle" aria-hidden="true"></i> {{o4}}</p>
             {% else %}
-                <p>{{o4}}</p>
+                <p><i class="fa fa-circle-o" aria-hidden="true"></i> {{o4}}</p>
             {% endif %}
             <h5 style="text-align:right;">Mark: {{gained}}/{{actualmark}}</h5>
         </div>

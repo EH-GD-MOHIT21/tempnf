@@ -18,6 +18,10 @@
         font-size: 15px;
         cursor: pointer;
         }
+    li:hover{
+        text-decoration: underline;
+        color: crimson;
+    }
     </style>
 </head>
 
@@ -27,15 +31,16 @@
         <div class="child1">
             <div class="constpart">
                 <p>Quiz Id: {{id}}</p>
+                <button style="background:green;text-align:center;display:block;margin: 10px auto;" type="button" onclick="createcsv('{{id}}')">Create Csv</button>
                 <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <h3>Responses: {{res}}</h3>
+                    <h3>Responses: <span id="tr-{{forloop.counter0}}">{{res}}</span></h3>
                     <button type="button" onclick="mohitfuncdel('{{id}}',this);">Delete Quiz</button>
                 </div>
             </div>
             <div class="wrapperconstpart" style="overflow-x: auto;max-height:75vh;">
                 {% for data in resdata|index:forloop.counter0 %}
                 <div class="childconstpart">
-                    <li>{{data}}</li>
+                    <li onclick="delresp('{{id}}','{{data}}',this,'tr-{{forloop.parentloop.counter0}}')" style="cursor:pointer;">{{data}}</li>
                     <a href="showquizresponses/{{id}}/filter?email={{data}}">View Response</a>
                 </div>
                 {% endfor %}
@@ -75,6 +80,67 @@
         } else {
             alert("HTTP-Error: " + response.status);
         }
+    }
+
+    async function createcsv(id){
+        let response = await fetch('/createcsv', {
+            credentials: 'include',
+            method: 'POST',
+            mode: 'same-origin',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "quiz_id": id,
+                "email": "{{request.user.email}}"
+            })
+        })
+        if (response.ok) {
+            let json = await response.json();
+            let message = json["message"]
+            if (message == "success") {
+                window.location.href = json["path"];
+            }else{
+                alert(message);
+            }
+        } else {
+            alert("HTTP-Error: " + response.status);
+        }
+    }
+
+    async function delresp(id,email,elm,headid){
+        var inp = prompt("Type delete (small letters) to delete correspondes response")
+        if(inp=='delete'){
+        let response = await fetch('/deluserresponse', {
+            credentials: 'include',
+            method: 'POST',
+            mode: 'same-origin',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "quiz_id": id,
+                "email": email
+            })
+        })
+        if (response.ok) {
+            let json = await response.json();
+            let message = json["message"]
+            if (message == "success") {
+                var temp = parseInt(document.getElementById(headid).textContent)
+                temp -= 1
+                document.getElementById(headid).textContent = temp;
+                elm.parentElement.remove()
+            }else{
+                alert(message);
+            }
+        } else {
+            alert("HTTP-Error: " + response.status);
+        }
+        }
+
     }
 </script>
 

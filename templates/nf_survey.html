@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey @ NestedForms.com</title>
+    <link rel="stylesheet" href="{% static 'survey.css' %}">
+</head>
+
+<body>
+    <div class="container">
+        <div class="form-basic-details">
+            <h2>kuch bhi</h2>
+            <p>ne</p>
+        </div>
+
+        <!-- 4 options a-50,b-26,c-12,d-13 -->
+
+        <div class="piechartwrapper">
+
+            <div class="piechartparent" style="width: 300px;height: 300px;background: radial-gradient(circle closest-side, transparent 100%, #fff 0), conic-gradient(from 180deg, red 0, red 35%, blue 0, blue 60%, green 0, green 80%, purple 0, purple 100%);">
+            </div>
+
+            <div class="piechartlegend">
+                <div class="wrapperpielegends">
+                    <div style="background: red;width:15px;height:15px;border-radius: 50%;"></div>
+                    <p>option 1</p>
+                </div>
+                <div class="wrapperpielegends">
+                    <div style="background: blue;width:15px;height:15px;border-radius: 50%;"></div>
+                    <p>option 2</p>
+                </div>
+                <div class="wrapperpielegends">
+                    <div style="background: green;width:15px;height:15px;border-radius: 50%;"></div>
+                    <p>option 3</p>
+                </div>
+                <div class="wrapperpielegends">
+                    <div style="background: purple;width:15px;height:15px;border-radius: 50%;"></div>
+                    <p>option 4</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

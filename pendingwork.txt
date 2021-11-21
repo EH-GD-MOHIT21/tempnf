@@ -1,12 +1,12 @@
-add date of form created in quiz and normal form both
+add date of form created in quiz and normal form both  --> almost done
 modify creator access page add quiz response also add django pagination if possible
-add custom option of marks while creating a quiz
+add custom option of marks while creating a quiz  --> done
 
 
 to be updated
 
-match user response with exact responses
-Generate spreadsheet according to user names and marks
+match user response with exact responses  --> done
+Generate spreadsheet according to user names and marks  --> done
 Generate spreadsheet according to questions and responses
 
 
@@ -18,4 +18,7 @@ in survey type forms add functionality to pie chart like graphs to show ui.
 
 to be change 
 
-check mcq at the time of submit not the time of shown response
+check mcq at the time of submit not the time of shown response --> done(Beta)
+
+
+# make responsive whole web(login changed)

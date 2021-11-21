@@ -10,7 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-from pathlib import Path,os
+from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'quizform',
     'dataanal',
+    'surveys',
 ]
 
 MIDDLEWARE = [
@@ -167,3 +169,7 @@ CACHE = {
 SITE_URL = "http://127.0.0.1:8000/"
 
 VALID_CHARS = [chr(i) for i in range(65,91)]+[str(i) for i in range(0,10)]+[chr(i) for i in range(97,123)] + ["_"]
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
