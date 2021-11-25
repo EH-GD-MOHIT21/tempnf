@@ -1,4 +1,5 @@
 {% load static %}
+{% load update %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -26,27 +27,61 @@
             <p>Address: {{address}}</p>
         </div>
 
-        {% for q,o1,o2,o3,o4,userfilled in data %}
+        {% for q,o1,o2,o3,o4,userfilled,is_mul in data %}
+        {% if not is_mul %}
         <div class="questioncontainer">
             <h2>{{q}}</h2>
-            {% if userfilled == o1 %}
-            <p style="color:green;font-size: 18px;"><i class="fa fa-circle" aria-hidden="true"></i> {{o1}}</p>
+            {{userfilled.0}}
+            {% if userfilled.0 == o1 %}
+            <p style="color:green;"><i class="fa fa-circle" aria-hidden="true"></i> {{o1}}</p>
             {% else %}
             <p><i class="fa fa-circle-thin" aria-hidden="true"></i> {{o1}}</p>
-            {% endif %} {% if userfilled == o2 %}
-            <p style="color:green;font-size: 18px;"><i class="fa fa-circle" aria-hidden="true"></i> {{o2}}</p>
+            {% endif %} {% if userfilled.0 == o2 %}
+            <p style="color:green;"><i class="fa fa-circle" aria-hidden="true"></i> {{o2}}</p>
             {% else %}
             <p><i class="fa fa-circle-thin" aria-hidden="true"></i> {{o2}}</p>
-            {% endif %} {% if userfilled == o3 %}
-            <p style="color:green;font-size: 18px;"><i class="fa fa-circle" aria-hidden="true"></i> {{o3}}</p>
+            {% endif %} {% if userfilled.0 == o3 %}
+            <p style="color:green;"><i class="fa fa-circle" aria-hidden="true"></i> {{o3}}</p>
             {% else %}
             <p><i class="fa fa-circle-thin" aria-hidden="true"></i> {{o3}}</p>
-            {% endif %} {% if userfilled == o4 %}
-            <p style="color:green;font-size: 18px;"><i class="fa fa-circle" aria-hidden="true"></i> {{o4}}</p>
+            {% endif %} {% if userfilled.0 == o4 %}
+            <p style="color:green;"><i class="fa fa-circle" aria-hidden="true"></i> {{o4}}</p>
             {% else %}
             <p><i class="fa fa-circle-thin" aria-hidden="true"></i> {{o4}}</p>
             {% endif %}
         </div>
+        {% else %}
+        <div class="questioncontainer">
+            <h2>{{q}}</h2>
+            {% if userfilled|update:o1 %}
+                <p style="color:green;"><i class="fa fa-circle" aria-hidden="true"></i> {{o1}}</p>
+            {% else %}
+                <p><i class="fa fa-circle-thin" aria-hidden="true"></i> {{o1}}</p>
+            {% endif %}
+            {% if userfilled|update:o2 %}
+                <p style="color:green;"><i class="fa fa-circle" aria-hidden="true"></i> {{o2}}</p>
+            {% else %}
+                <p><i class="fa fa-circle-thin" aria-hidden="true"></i> {{o2}}</p>
+            {% endif %}
+            {% if userfilled|update:o3 %}
+                <p style="color:green;"><i class="fa fa-circle" aria-hidden="true"></i> {{o3}}</p>
+            {% else %}
+                <p><i class="fa fa-circle-thin" aria-hidden="true"></i> {{o3}}</p>
+            {% endif %}
+            {% if userfilled|update:o4 %}
+                <p style="color:green;"><i class="fa fa-circle" aria-hidden="true"></i> {{o4}}</p>
+            {% else %}
+                <p><i class="fa fa-circle-thin" aria-hidden="true"></i> {{o4}}</p>
+            {% endif %}
+        </div>
+        {% endif %}
+        {% endfor %}
+
+        {% for qus,ans in ftpdata %}
+            <div class="questioncontainer">
+                <h2>{{qus}}</h2>
+                <p>{{ans}}</p>
+            </div>
         {% endfor %}
 
         <div class="footercontent">

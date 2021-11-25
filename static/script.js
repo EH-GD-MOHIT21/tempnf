@@ -1,131 +1,105 @@
 var main_div = document.getElementById('outer');
-var add_more = document.getElementById('content-adderbutton');
-var remove_elm = document.getElementById('content-minusbutton');
-temp = 0;
-indigocolor = 1;
-mohit = false;
+var add_more_mcq = document.getElementById('mcq-adder');
+var add_more_ftp = document.getElementById('ftp-adder');
 
-add_more.onclick = function() {
 
-    document.getElementById("content-minusbutton").style.display = "inline-block";
-    // main div
+add_more_mcq.onclick = function() {
     var div = document.createElement('div');
     div.setAttribute('class', 'question-prototype');
 
-    // qus type
-    var new_field = document.createElement('textarea');
+    // qus
+    var qus = document.createElement('textarea');
+    qus.setAttribute('name', 'questionmcq');
+    qus.setAttribute('class', 'question-box');
+    qus.setAttribute('placeholder', 'Enter Your Question Here');
+    qus.required = true;
+    div.appendChild(qus);
 
-    new_field.setAttribute('name', 'question' + indigocolor);
-    new_field.setAttribute('class', 'question-box');
-    new_field.setAttribute('placeholder', 'Enter Your Question Here');
+    // options
+    var opts = ['A', 'B', 'C', 'D']
+    for (var i = 0; i < 4; i++) {
+        var cdiv = document.createElement('div');
+        cdiv.setAttribute('class', 'main-icoinput');
 
+        // icon
+        var ico = document.createElement('i');
+        ico.setAttribute('class', 'far fa-circle');
+        cdiv.appendChild(ico);
 
-    // option types
+        var inp = document.createElement('input');
+        inp.setAttribute('type', 'text');
+        inp.setAttribute('class', 'option-box');
+        inp.setAttribute('name', 'option' + (i + 1));
+        inp.setAttribute('placeholder', 'option ' + opts[i]);
 
-    //option 1
+        cdiv.appendChild(inp);
+        div.appendChild(cdiv);
+    }
 
-    var div0 = document.createElement('div');
-    div0.setAttribute('class', 'main-icoinput');
+    // <div class="ismulticorrect">
+    // <input type="hidden" name="multicorrect" id="mc0">
+    // <input type="checkbox" onchange="mfsetcheck('mc0',this)">
+    // </div>
 
-    // icon1
+    var pdiv = document.createElement('div');
+    pdiv.setAttribute('class', 'ismulticorrect');
 
-    var icon1 = document.createElement('i')
-    icon1.setAttribute('class', 'far fa-circle')
+    var pinp = document.createElement('input');
+    pinp.setAttribute('type', 'hidden');
+    pinp.setAttribute('name', 'multicorrect');
+    pdiv.appendChild(pinp);
 
-    var opt1 = document.createElement('input');
-    opt1.setAttribute('type', 'text');
-    opt1.setAttribute('name', 'option1' + indigocolor);
-    opt1.setAttribute('class', 'option-box');
-    opt1.setAttribute('placeholder', 'Option A');
+    var cinp = document.createElement('input');
+    cinp.setAttribute('type', 'checkbox');
+    cinp.onchange = function() {
+        if (this.checked) {
+            pinp.value = 1;
+        } else {
+            pinp.value = 0;
+        }
+    }
 
-    //append icon1 and opt1 to div0
-    div0.appendChild(icon1);
-    div0.appendChild(opt1);
+    pdiv.appendChild(cinp);
+    var spn = document.createElement('span');
+    spn.textContent = " More than one choice";
+    pdiv.appendChild(spn);
+    div.appendChild(pdiv);
 
-    // option 2
-
-    var div1 = document.createElement('div');
-    div1.setAttribute('class', 'main-icoinput');
-
-    //icon2 
-
-    var icon2 = document.createElement('i')
-    icon2.setAttribute('class', 'far fa-circle')
-
-    var opt2 = document.createElement('input');
-    opt2.setAttribute('type', 'text');
-    opt2.setAttribute('name', 'option2' + indigocolor);
-    opt2.setAttribute('class', 'option-box');
-    opt2.setAttribute('placeholder', 'Option B');
-
-    //append icon2 and opt2 to div1
-    div1.appendChild(icon2);
-    div1.appendChild(opt2);
-
-    // option 3
-
-    var div2 = document.createElement('div');
-    div2.setAttribute('class', 'main-icoinput');
-
-    // icon 3
-
-    var icon3 = document.createElement('i')
-    icon3.setAttribute('class', 'far fa-circle')
-
-    var opt3 = document.createElement('input');
-    opt3.setAttribute('type', 'text');
-    opt3.setAttribute('name', 'option3' + indigocolor);
-    opt3.setAttribute('class', 'option-box');
-    opt3.setAttribute('placeholder', 'Option C');
-
-    //append icon3 and opt3 to div2
-    div2.appendChild(icon3);
-    div2.appendChild(opt3);
-
-    // option 4
-
-    var div3 = document.createElement('div');
-    div3.setAttribute('class', 'main-icoinput');
-
-    //icon4
-
-    var icon4 = document.createElement('i')
-    icon4.setAttribute('class', 'far fa-circle')
-
-    var opt4 = document.createElement('input');
-    opt4.setAttribute('type', 'text');
-    opt4.setAttribute('name', 'option4' + indigocolor);
-    opt4.setAttribute('class', 'option-box');
-    opt4.setAttribute('placeholder', 'Option D');
-
-    //append icon4 and opt4 to div3
-    div3.appendChild(icon4);
-    div3.appendChild(opt4);
-
-    // final add divs to main div
-
-    div.appendChild(new_field);
-    div.appendChild(div0);
-    div.appendChild(div1);
-    div.appendChild(div2);
-    div.appendChild(div3);
-
+    var delbtn = document.createElement('button');
+    delbtn.setAttribute('type', 'button');
+    delbtn.setAttribute('class', 'delbtn');
+    delbtn.textContent = "Delete";
+    delbtn.onclick = function() {
+        this.parentElement.remove();
+    }
+    div.appendChild(delbtn);
     main_div.appendChild(div);
-    indigocolor += 1;
     myspecialshitquery();
-
 }
 
-remove_elm.onclick = function() {
-    indigocolor -= 1;
-    var input_tags = main_div.getElementsByClassName("question-prototype");
-    if (input_tags.length > 1) {
-        main_div.removeChild(input_tags[(input_tags.length) - 1]);
+add_more_ftp.onclick = function() {
+    var div = document.createElement('div');
+    div.setAttribute('class', 'question-prototype');
+
+    var textarea = document.createElement('textarea');
+    textarea.setAttribute('name', 'questionftp');
+    textarea.setAttribute('class', 'question-box');
+    textarea.setAttribute('placeholder', 'Enter Your Question Here');
+    textarea.required = true;
+
+    var delbtn = document.createElement('button');
+    delbtn.setAttribute('type', 'button');
+    delbtn.setAttribute('class', 'delbtn');
+    delbtn.textContent = "Delete";
+    delbtn.onclick = function() {
+        this.parentElement.remove();
     }
-    if (input_tags.length == 1) {
-        document.getElementById("content-minusbutton").style.display = "none";
-    }
+    div.appendChild(textarea);
+    div.appendChild(delbtn);
+    main_div.appendChild(div);
+    myspecialshitquery();
 }
+
 
 // Auto scailing text-areas
 
@@ -153,6 +127,14 @@ function myspecialshitquery() {
         this.style.height =
             (this.scrollHeight) + 'px';
     });
+}
+
+function mfsetcheck(id, checkelm) {
+    if (checkelm.checked) {
+        document.getElementById(id).value = 1;
+    } else {
+        document.getElementById(id).value = 0;
+    }
 }
 
 myspecialshitquery();

@@ -20,6 +20,19 @@ body {
     background: white;
     border-radius: 10px;
     margin: 15px auto;
+    padding: 10px;
+}
+
+.form-basic-details p {
+    text-align: justify;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+.form-basic-details h2 {
+    text-align: center;
+    word-wrap: break-word;
+    word-break: break-all;
 }
 
 .wrapperpielegends {
@@ -29,6 +42,18 @@ body {
 
 .piechartwrapper {
     display: flex;
-    justify-content: space-around;
     align-items: center;
+}
+
+.wrappercontainer {
+    background: white;
+    border-left: 5px solid #4285f4;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 20px auto;
+    text-align: center;
+}
+
+.piechartlegend {
+    margin-left: 25% !important;
 }

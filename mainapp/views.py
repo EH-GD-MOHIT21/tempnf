@@ -1,9 +1,11 @@
 from django.shortcuts import render,redirect
-from .models import formpublicdata,formMCQquestions
-from .models import responses as form_responses
+from .models import formFillTypeQuestions, formFillTypeResponse, formMCQTypeResponse, formpublicdata,formMCQquestions,base_form_data_response as form_responses
 from django.views.decorators.csrf import csrf_exempt
-from random import choice
-
+from random import choice,randint
+from datetime import datetime
+import ast
+from django.http import JsonResponse
+import json
 
 # Create your views here.
 
@@ -15,28 +17,79 @@ def home(request):
 def saveresponse(request,formid=None):
     if not request.user.is_authenticated:
         return render(request,'confirm.html',{'message':'Please Login to fill a form.'})
-    if request.method == "GET":
+    if request.method != "POST":
         return redirect('/')
+    try:
+        myformdata = formpublicdata.objects.get(token=formid)
+    except:
+        return render(request,'confirm.html',{'message':"Required Form Doesn't Exists."})
+    try:
+        form_responses.objects.get(token=formid,email=request.user.email)
+        return render(request,'confirm.html',{'message':"You've already responded"})
+    except Exception as e:
+        pass
+
+    if not myformdata.accept_response:
+        return render(request,'confirm.html',{'message':'This Form is no longer accepting response.'})
+
     name = request.POST['name']
-    mail = request.user.username
+    mail = request.user.email
     phone = request.POST['phone']
     address = request.POST['address']
-    delimitor = "@*[=m!@}$o%^:h&8*i-;t"
-    responses = []
+
+    mcqans = []
+    ftpans = []
     i = 0
     while True:
         try:
-            option = request.POST[str(i)]
-            responses.append(option)
-            i+=1
-        except:
+            request.POST["mcq-"+str(i)]
+        except Exception as e:
+            print(e)
             break
-    responses = delimitor.join(responses)
-    if len(form_responses.objects.filter(code=formid,mail=mail)) or len(form_responses.objects.filter(code=formid,phone=phone)):
-        return render(request,'confirm.html',{'message':"You've already responded"})
-    temp = form_responses(code=formid,name=name,mail=mail,phone=phone,address=address,responses=responses)
-    temp.save()
-    return render(request,'confirm.html')
+        data = request.POST.getlist("mcq-"+str(i))
+        mcqans.append(data)
+        i+=1
+
+    i = 0
+    while True:
+        try:
+            request.POST["ftp-"+str(i)]
+        except Exception as e:
+            print(e)
+            break
+        data = request.POST.getlist("ftp-"+str(i))
+        ftpans.append(data)
+        i+=1
+    
+    # final db work here
+
+    #base model creation
+    model = form_responses()
+    model.token = formid
+    model.name = name
+    model.email = mail
+    model.phone_no = phone
+    model.address = address
+    model.save()
+
+    # mcq type user response model
+    for ans in mcqans:
+        tmodel = formMCQTypeResponse()
+        tmodel.code = model
+        tmodel.answer = ans
+        tmodel.save()
+
+    # fill type ans saver
+
+    for ans in ftpans:
+        tmodel = formFillTypeResponse()
+        tmodel.code = model
+        tmodel.answer = str(ans[0])
+        tmodel.save()
+
+        
+
+    return render(request,'confirm.html',{'message':'Your Responses have been successfully submitted.'})
 
 
 
@@ -46,32 +99,42 @@ def fillform(request,formid=None):
     if formid == None:
         return redirect('/login')
     try:
-        form_responses.objects.get(code=formid,mail=request.user.username)
+        form_responses.objects.get(token=formid,email=request.user.email)
         return render(request,'confirm.html',{'message':"You've Already Responded."})
     except:
         pass
-    myformdata = formpublicdata.objects.filter(code=formid)
-    if len(myformdata)==1:
-        for element in myformdata:
-            fmcq = formMCQquestions.objects.filter(code=formid)
-            questions = []
-            option1 = []
-            option2 = []
-            option3 = []
-            option4 = []
-            for mcqs in fmcq:
-                questions.append(mcqs.question)
-                option1.append(mcqs.option1)
-                option2.append(mcqs.option2)
-                option3.append(mcqs.option3)
-                option4.append(mcqs.option4)
-            main_list = zip(questions,option1,option2,option3,option4)
-            content = {
-                'mainlist':main_list
-            }
-            return render(request,'quiz.html',{'title':element.title,'desc':element.desc,'creator':element.creator,'mail':element.mail,'content':content,'formid':formid})
-    else:
-        return redirect('/login')
+    try:
+        myformdata = formpublicdata.objects.get(token=formid)
+        element = myformdata
+    except:
+        return render(request,'confirm.html',{'message':"Required Form Not Exists"})
+
+    if not myformdata.accept_response:
+        return render(request,'confirm.html',{'message':'This Form is no longer accepting response.'})
+    
+    fmcq = formMCQquestions.objects.filter(code=myformdata)
+    ftpq = formFillTypeQuestions.objects.filter(code=myformdata)
+    questions = []
+    option1 = []
+    option2 = []
+    option3 = []
+    option4 = []
+    ftpqus = []
+    is_multi = []
+    for mcqs in fmcq:
+        questions.append(mcqs.question)
+        option1.append(mcqs.option1)
+        option2.append(mcqs.option2)
+        option3.append(mcqs.option3)
+        option4.append(mcqs.option4)
+        is_multi.append(mcqs.is_multi_correct)
+    main_list = zip(questions,option1,option2,option3,option4,is_multi)
+    content = {
+        'mainlist':main_list
+    }
+    for qus in ftpq:
+        ftpqus.append(qus.question)
+    return render(request,'quiz.html',{'title':element.title,'desc':element.desc,'creator':element.creator,'mail':element.mail,'content':content,'formid':formid,'filltype':ftpqus})
 
 
 
@@ -89,9 +152,14 @@ def generateaunicode():
     for i in range(26):
         alphas.append(chr(65+i))
         alphas.append(chr(97+i))
-    for i in range(81):
+    for i in range(randint(30,60)):
         varsptoken += choice(alphas)
-
+    time_now = str(datetime.now())
+    dels = [' ','-',':','.']
+    for d in dels:
+        time_now = time_now.replace(d,'_')
+    
+    varsptoken += time_now
     return (varsptoken)
 
 
@@ -100,63 +168,57 @@ def generateaunicode():
 def savedetails(request):
     if not request.user.is_authenticated:
         return render(request,'confirm.html',{'message':'Please Login And Try Again.'})
-    if request.method == "GET":
+    if not request.method == "POST":
         return redirect('/')
 
     personalcode = generateaunicode()
     
     title = request.POST['formtitle']
-    mail = request.user.username
+    mail = request.user.email
     creatorname = request.POST['creatorname']
     desc = request.POST['formdesc']
-    i = 0
-    questions = []
-    option1 = []
-    option2 = []
-    option3 = []
-    option4 = []
-    while True:
-        try:
-            question = request.POST[f'question{i}']
-            op1 = request.POST[f'option1{i}']
-            op2 = request.POST[f'option2{i}']
-            op3 = request.POST[f'option3{i}']
-            op4 = request.POST[f'option4{i}']
-            questions.append(question)
-            option1.append(op1)
-            option2.append(op2)
-            option3.append(op3)
-            option4.append(op4)
-            i+=1
-        except:
-            break
 
-        if i > 2000:
-            return render(request,'logshower.html',{'formid': 'sorry but you cannot make so much questions limit is 2000.'})
+    model = formpublicdata()
+    model.token = personalcode
+    model.title = title
+    model.mail = mail
+    model.creator = creatorname
+    model.desc = desc
+    model.save()
 
-    
-    mytimecalculator = 0
-    while(len(formpublicdata.objects.filter(code=personalcode))):
-        personalcode = generateaunicode()
-        mytimecalculator +=1
-        if mytimecalculator > 10000:
-            return render(request,'logshower.html',{'formid': 'sorry but we are unable to process your request'})
-    
-    temp = formpublicdata(title=title,mail=mail,creator=creatorname,desc=desc,code=personalcode)
-    temp.save()
-    for i in range(0,len(questions)):
-        obj = formMCQquestions(code=personalcode)
-        obj.question = questions[i]
-        obj.option1 = option1[i]
-        obj.option2 = option2[i]
-        obj.option3 = option3[i]
-        obj.option4 = option4[i]
-        obj.save()
+    mcqqus = request.POST.getlist("questionmcq")
+    option1 = request.POST.getlist("option1")
+    option2 = request.POST.getlist("option2")
+    option3 = request.POST.getlist("option3")
+    option4 = request.POST.getlist("option4")
+    multicorrect = request.POST.getlist("multicorrect")
+
+    for qus,opt1,opt2,opt3,opt4,ismc in zip(mcqqus,option1,option2,option3,option4,multicorrect):
+        tmodel = formMCQquestions()
+        tmodel.code = model
+        tmodel.question = qus
+        tmodel.option1 = opt1
+        tmodel.option2 = opt2
+        tmodel.option3 = opt3
+        tmodel.option4 = opt4
+        if ismc.strip() == "1":
+            tmodel.is_multi_correct = True
+        else:
+            tmodel.is_multi_correct = False
+        tmodel.save()
+
+    ftpqus = request.POST.getlist("questionftp")
+    for qus in ftpqus:
+        tmodel = formFillTypeQuestions()
+        tmodel.code = model
+        tmodel.question = qus
+        tmodel.save()
     return render(request,'logshower.html',{'formid':personalcode,'message':'success'})
     
 
 @csrf_exempt
 def getformbyid(request):
+    # need tobe rewrite
     formid = request.POST['formtoken']
     myformdata = formpublicdata.objects.filter(code=formid)
     if len(myformdata)==1:
@@ -196,67 +258,176 @@ def showresponsepage(request,formid=None,email=None):
     if not request.user.is_authenticated:
         return render(request,'confirm.html',{'message':'Please Login to authenticate.'})
     try:
+        form = formpublicdata.objects.get(token=formid)
+    except:
+        return render(request,'confirm.html',{'message':'Invalid Form Id.'})
+
+    if not form.show_response and not request.user.is_superuser and request.user.email != form.mail:
+        return render(request,'confirm.html',{'message':'You Need Permission.'})
+
+    try:
         email = request.GET["email"]
-        delimitor = "@*[=m!@}$o%^:h&8*i-;t"
-        form = formpublicdata.objects.get(code=formid)
+        
         title = form.title
         desc = form.desc
         author = form.creator
         contact = form.mail
-        responses_obj = form_responses.objects.get(code=formid,mail=email)
+        responses_obj = form_responses.objects.get(token=formid,email=email)
         
-        fmcqs = formMCQquestions.objects.filter(code=formid)
+        fmcqs = formMCQquestions.objects.filter(code=form)
         questions = []
         option1 = []
         option2 = []
         option3 = []
         option4 = []
+        is_multi_correct = []
         for mcq in fmcqs:
             questions.append(mcq.question)
             option1.append(mcq.option1)
             option2.append(mcq.option2)
             option3.append(mcq.option3)
             option4.append(mcq.option4)
-        responses = responses_obj.responses
-        responses = responses.split(delimitor)
-        data = zip(questions,option1,option2,option3,option4,responses)
+            is_multi_correct.append(mcq.is_multi_correct)
+        responses = []
+        resps = formMCQTypeResponse.objects.filter(code=responses_obj)
+        for res in resps:
+            responses.append(ast.literal_eval(res.answer))
+        ftpresp = formFillTypeResponse.objects.filter(code=responses_obj)
+        ftpqus = []
+        ftpresponses = []
+        ffilltpsq = formFillTypeQuestions.objects.filter(code=form)
+        for qus in ffilltpsq:
+            ftpqus.append(qus.question)
+        for ans in ftpresp:
+            ftpresponses.append(str(ans.answer))
+        print(ftpqus,ftpresponses)
+        # fetch responses from db --> pending
+        data = zip(questions,option1,option2,option3,option4,responses,is_multi_correct)
         # pick qus from formpublic data
         username = responses_obj.name
-        mail = responses_obj.mail
-        phone = responses_obj.phone
+        mail = responses_obj.email
+        phone = responses_obj.phone_no
         address = responses_obj.address
+
+        ftpdata = zip(ftpqus,ftpresponses)
         
         # permission <<<->>>
 
-        if (email == request.user.username) or (form.mail==request.user.username) or (request.user.is_superuser):
-            return render(request,'showresponses.html',{'title':title,'desc':desc,'author':author,'contact':contact,'data':data,'username':username,'mail':mail,'phone':phone,'address':address})
+        if (email == request.user.email) or (form.mail==request.user.email) or (request.user.is_superuser):
+            return render(request,'showresponses.html',{'title':title,'desc':desc,'author':author,'contact':contact,'data':data,'username':username,'mail':mail,'phone':phone,'address':address,'ftpdata':ftpdata})
         
         return render(request,'confirm.html',{'message':'You Cannot see someone others responses.'})
 
     except Exception as e:
+        # raise(e)
+        print(e)
         return redirect('/')
     
     
 
 def creatorpageview(request):
     if request.user.is_authenticated:
-        forms = formpublicdata.objects.filter(mail=request.user.username)
+        forms = formpublicdata.objects.filter(mail=request.user.email)
         formids = []
+        view_perms = []
+        fill_perms = []
         for form in forms:
-            formids.append(form.code)
+            formids.append(form.token)
+            view_perms.append(form.show_response)
+            fill_perms.append(form.accept_response)
         total_res = []
         responses = []
         for ids in formids:
             temp = []
-            data = form_responses.objects.filter(code=ids)
+            data = form_responses.objects.filter(token=ids)
             for dat in data:
-                temp.append(dat.mail)
+                temp.append(dat.email)
             responses.append(temp)
             total_res.append(len(data))
-        data = zip(formids,total_res)
+        data = zip(formids,total_res,view_perms,fill_perms)
         # print(responses)
         for form in forms:
-            return render(request,'creator.html',{'data':data,'mail':request.user.username,'resdata':responses})
+            return render(request,'creator.html',{'data':data,'mail':request.user.email,'resdata':responses})
         return render(request,'confirm.html',{'message':'You Have Not created Any forms please create some.'})
     else:
-        return redirect('/')
+        return redirect('/login')
+
+
+@csrf_exempt
+def set_form_res_visibility_Api(request):
+    if not request.user.is_authenticated or not request.method == "POST":
+        return JsonResponse({'status':400,'message':'Invalid Request.'})
+    body = json.loads(request.body)
+    form_id = body.get("form_id")
+    try:
+        form = formpublicdata.objects.get(token=form_id)
+        if form.show_response:
+            form.show_response = False
+        else:
+            form.show_response = True
+        form.save()
+        return JsonResponse({'status':200,'message':'success'})
+    except:
+        return JsonResponse({'status':404,'message':'Invalid form Id.'})
+
+
+@csrf_exempt
+def delete_form_api(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status':403,'message':'User Not authenticated.'})
+    body = json.loads(request.body)
+    form_id = body.get("form_id")
+    email = body.get("email")
+
+    try:
+        formpublicdata.objects.get(token=form_id,mail=email).delete()
+    except:
+        return JsonResponse({'status':406,'message':'Quiz Doesnot exists or you donot have permission to delete quiz.'})
+
+    try:
+        # do ssame in quiz delete 
+        forms = form_responses.objects.filter(token=form_id)
+        for form in forms:
+            form.delete()
+    except:
+        pass
+
+    return JsonResponse({'status':200,'message':'success'})
+
+    # complete it.
+
+@csrf_exempt
+def delete_form_response_api(request):
+    if not request.user.is_authenticated or not request.method=="POST":
+        return JsonResponse({'status':400,'message':'Invalid Request.'})
+    body = json.loads(request.body)
+    form_id = body.get("form_id")
+    email_del_res = body.get("email")
+    try:
+        formpublicdata.objects.get(token=form_id,mail=request.user.email)
+    except:
+        return JsonResponse({'status':404,'message':'quiz not found.'})
+    try:
+        user_res = form_responses.objects.get(token=form_id,email=email_del_res)
+        user_res.delete()
+        return JsonResponse({'status':200,'message':'success'})
+    except:
+        return JsonResponse({'status':404,'message':'User response not exists.'})
+
+
+@csrf_exempt
+def set_form_acpres_Api(request):
+    if not request.user.is_authenticated or not request.method == "POST":
+        return JsonResponse({'status':400,'message':'Invalid Request.'})
+    body = json.loads(request.body)
+    form_id = body.get("form_id")
+    try:
+        form = formpublicdata.objects.get(token=form_id)
+        if form.accept_response:
+            form.accept_response = False
+        else:
+            form.accept_response = True
+        form.save()
+        return JsonResponse({'status':200,'message':'success'})
+    except:
+        return JsonResponse({'status':404,'message':'Invalid form Id.'})

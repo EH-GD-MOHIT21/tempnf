@@ -10,6 +10,23 @@
     <link rel="stylesheet" href="{% static 'quiz.css' %}">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        textarea {
+            outline: none;
+            border: none;
+            border-bottom: 2px solid gray;
+            width: 95%;
+            margin: 10px auto;
+            height: 40px;
+            outline: none;
+            text-align: center;
+            font-size: 20px;
+            padding: 7px;
+            display: block;
+            overflow: hidden;
+            resize: none;
+        }
+    </style>
 
 </head>
 
@@ -25,26 +42,54 @@
         <div class="parentelement">
             <div class="container inputcontainer">
                 <input type="text" name="name" required placeholder="Enter Your Full Name">
-                <input type="text" name="mail" required placeholder="Enter Your email address" value={{user.username}} disabled>
+                <input type="text" name="mail" required placeholder="Enter Your email address" value={{user.email}} disabled>
                 <input type="text" name="phone" required placeholder="Enter Your Phone Number">
                 <input type="text" name="address" required placeholder="Enter Your Full Address">
             </div>
         </div>
 
-        {% for i,j,k,l,m in content.mainlist %}
+        {% for i,j,k,l,m,is_mpl in content.mainlist %}
         <div class="parentelement">
+            {% if not is_mpl %}
             <div class="container">
                 <h3>{{i}}</h3>
                 <div class="radio-container">
-                    <input name="{{ forloop.counter0 }}" type="radio" name="radio-value-1" value="{{j}}" id="0-{{ forloop.counter0 }}">
+                    <input type="hidden" name="mcq-{{ forloop.counter0 }}" value="" id="mcq-{{ forloop.counter0 }}">
+                    <input name="{{ forloop.counter0 }}" type="radio" name="radio-value-1" value="{{j}}" id="0-{{ forloop.counter0 }}" onchange="funchandlersc(this.id,this.value)">
                     <label for="0-{{ forloop.counter0 }}">{{j}}</label><br>
-                    <input name="{{ forloop.counter0 }}" type="radio" name="radio-value-1" value="{{k}}" id="1-{{ forloop.counter0 }}">
+                    <input name="{{ forloop.counter0 }}" type="radio" name="radio-value-1" value="{{k}}" id="1-{{ forloop.counter0 }}" onchange="funchandlersc(this.id,this.value)">
                     <label for="1-{{ forloop.counter0 }}">{{k}}</label><br>
-                    <input name="{{ forloop.counter0 }}" type="radio" name="radio-value-1" value="{{l}}" id="2-{{ forloop.counter0 }}">
+                    <input name="{{ forloop.counter0 }}" type="radio" name="radio-value-1" value="{{l}}" id="2-{{ forloop.counter0 }}" onchange="funchandlersc(this.id,this.value)">
                     <label for="2-{{ forloop.counter0 }}">{{l}}</label><br>
-                    <input name="{{ forloop.counter0 }}" type="radio" name="radio-value-1" value="{{m}}" id="3-{{ forloop.counter0 }}">
+                    <input name="{{ forloop.counter0 }}" type="radio" name="radio-value-1" value="{{m}}" id="3-{{ forloop.counter0 }}" onchange="funchandlersc(this.id,this.value)">
                     <label for="3-{{ forloop.counter0 }}">{{m}}</label><br>
                 </div>
+            </div>
+            {% else %}
+            <div class="container">
+                <h3>{{i}}</h3>
+                <div class="radio-container">
+                    <input type="hidden" name="mcq-{{ forloop.counter0 }}" id="mcq-0-{{ forloop.counter0 }}">
+                    <input name="{{ forloop.counter0 }}" type="checkbox" name="radio-value-1" value="{{j}}" id="0-{{ forloop.counter0 }}" onchange="funchanmcq(this.id,this.value);">
+                    <label for="0-{{ forloop.counter0 }}">{{j}}</label><br>
+                    <input type="hidden" name="mcq-{{ forloop.counter0 }}" id="mcq-1-{{ forloop.counter0 }}">
+                    <input name="{{ forloop.counter0 }}" type="checkbox" name="radio-value-1" value="{{k}}" id="1-{{ forloop.counter0 }}" onchange="funchanmcq(this.id,this.value);">
+                    <label for="1-{{ forloop.counter0 }}">{{k}}</label><br>
+                    <input type="hidden" name="mcq-{{ forloop.counter0 }}" id="mcq-2-{{ forloop.counter0 }}">
+                    <input name="{{ forloop.counter0 }}" type="checkbox" name="radio-value-1" value="{{l}}" id="2-{{ forloop.counter0 }}" onchange="funchanmcq(this.id,this.value);">
+                    <label for="2-{{ forloop.counter0 }}">{{l}}</label><br>
+                    <input type="hidden" name="mcq-{{ forloop.counter0 }}" id="mcq-3-{{ forloop.counter0 }}">
+                    <input name="{{ forloop.counter0 }}" type="checkbox" name="radio-value-1" value="{{m}}" id="3-{{ forloop.counter0 }}" onchange="funchanmcq(this.id,this.value);">
+                    <label for="3-{{ forloop.counter0 }}">{{m}}</label><br>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %} {% for qus in filltype %}
+        <div class="parentelement">
+            <div class="container">
+                <h3>{{qus}}</h3>
+                <textarea class="textarea" oninput="this.style.height = 'auto';this.style.height =(this.scrollHeight) + 'px';" name=ftp-{{forloop.counter0}} placeholder="Enter Your Ans here" style="text-align: left;"></textarea>
             </div>
         </div>
         {% endfor %}
@@ -61,5 +106,19 @@
     <footer id="footer-tag">Developed By Mohit Satija | Copyright &copy; 2021 All Rights Reserved</footer>
 
 </body>
+<script>
+    function funchandlersc(id, value) {
+        id = id.split('-')[1];
+        document.getElementById('mcq-' + id).value = value;
+    }
+
+    function funchanmcq(id, value) {
+        if (document.getElementById(id).checked) {
+            document.getElementById('mcq-' + id).value = value;
+        } else {
+            document.getElementById('mcq-' + id).value = '';
+        }
+    }
+</script>
 
 </html>

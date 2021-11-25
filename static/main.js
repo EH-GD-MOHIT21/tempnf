@@ -21,6 +21,7 @@ async function mohit() {
         // document.getElementById("verifier").style.display = 'block';
         let json = await response.json();
         let message = json["message"]
+        console.log(message);
         if (message == 'otp send.') {
             document.getElementById("otp").style.display = "block";
             document.getElementById("keyico").style.display = "block";
@@ -49,6 +50,7 @@ async function mohit() {
                     // document.getElementById("verifier").style.display = 'block';
                     let json = await response.json();
                     let message = json["message"]
+                    console.log(message);
                     if (message == 'success') {
                         window.location.replace('/')
                     }

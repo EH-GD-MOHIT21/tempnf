@@ -12,6 +12,28 @@
     <link rel="stylesheet" href="{% static 'index.css' %}">
     <script src="https://code.jquery.com/jquery-3.4.1.min.js">
     </script>
+    <style>
+        .delbtn {
+            display: block;
+            margin: 20px auto;
+            color: white;
+            background: crimson;
+            padding: 6px 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 1px solid gray;
+            border-radius: 6px;
+        }
+        
+        .ismulticorrect {
+            text-align: right;
+            margin-right: 7px;
+        }
+        
+        input[type="checkbox"] {
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body>
@@ -30,7 +52,7 @@
 
             <input type="text" name="creatorname" required class="other-data" placeholder="Enter Creator's Name">
 
-            <input type="text" name="mail" class="other-data" required placeholder="Enter Creator's Mail Id" value={{user.username}} disabled>
+            <input type="text" name="mail" class="other-data" required placeholder="Enter Creator's Mail Id" value={{user.email}} disabled>
 
             <textarea name="formdesc" id="Form-Desc" required placeholder="Enter Form's Description"></textarea>
 
@@ -39,22 +61,29 @@
 
         <div id="outer">
             <div class="question-prototype">
-                <textarea name="question0" class="question-box" required placeholder="Enter Your Question Here"></textarea>
-                <!-- <input type="text" class="question-box" placeholder="Enter Your Question Here"> -->
-                <div class="main-icoinput"><i class="far fa-circle"></i><input required type="text" class="option-box" name="option10" placeholder="option A"></div>
-                <div class="main-icoinput"><i class="far fa-circle"></i><input type="text" class="option-box" name="option20" placeholder="option B"></div>
-                <div class="main-icoinput"><i class="far fa-circle"></i><input type="text" class="option-box" name="option30" placeholder="option C"></div>
-                <div class="main-icoinput"><i class="far fa-circle"></i><input type="text" class="option-box" name="option40" placeholder="option D"></div>
+                <textarea name="questionmcq" class="question-box" required placeholder="Enter Your Question Here"></textarea>
+                <div class="main-icoinput"><i class="far fa-circle"></i><input required type="text" class="option-box" name="option1" placeholder="option A"></div>
+                <div class="main-icoinput"><i class="far fa-circle"></i><input type="text" class="option-box" name="option2" placeholder="option B"></div>
+                <div class="main-icoinput"><i class="far fa-circle"></i><input type="text" class="option-box" name="option3" placeholder="option C"></div>
+                <div class="main-icoinput"><i class="far fa-circle"></i><input type="text" class="option-box" name="option4" placeholder="option D"></div>
+                <div class="ismulticorrect">
+                    <input type="hidden" name="multicorrect" id="mc0">
+                    <input type="checkbox" onchange="mfsetcheck('mc0',this)">
+                    <span>More than one choice</span>
+                </div>
+                <button class="delbtn" onclick="this.parentElement.remove();" type="button">Delete</button>
+            </div>
+            <div class="question-prototype">
+                <textarea name="questionftp" class="question-box" required placeholder="Enter Your Question Here"></textarea>
+                <button class="delbtn" onclick="this.parentElement.remove();" type="button">Delete</button>
             </div>
         </div>
 
 
         <div class="btnsholder">
-            <button type="button" id="content-adderbutton"><i class="fas fa-plus-circle"></i></button>
+            <button type="button" id="mcq-adder" class="mainbutton">Add Mcq</button>
             <button type="Submit" class="mainbutton">Generate Token</button>
-            <div class="logbutton"><span id="log-shower1" style="display: block;"></span>
-                <button type="button" id="content-minusbutton"><i class="fas fa-minus-circle buchad"></i></button>
-            </div>
+            <button type="button" id="ftp-adder" class="mainbutton">Add FillType</button>
         </div>
     </form>
 

@@ -12,4 +12,6 @@ urlpatterns = [
     path('updatemark',update_mark_filltype_Api),
     path('deletequiz',delete_quiz_api),
     path('deluserresponse',delete_response_api),
+    path('updatequizperm',set_quiz_res_visibility_Api),
+    path('changeacceptrespapi',set_accepting_respquiz_api),
 ]

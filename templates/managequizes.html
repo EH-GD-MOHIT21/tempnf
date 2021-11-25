@@ -9,31 +9,118 @@
     <title>Manage Quizes @ NestedForm</title>
     <link rel="stylesheet" href="{% static 'creator.css' %}">
     <style>
-    button{
-        padding: 6px 10px;
-        color: white;
-        background: crimson;
-        border: 1px solid gray;
-        border-radius: 4px;
-        font-size: 15px;
-        cursor: pointer;
+        button {
+            padding: 6px 10px;
+            color: white;
+            background: crimson;
+            border: 1px solid gray;
+            border-radius: 4px;
+            font-size: 15px;
+            cursor: pointer;
         }
-    li:hover{
-        text-decoration: underline;
-        color: crimson;
-    }
+        
+        li:hover {
+            text-decoration: underline;
+            color: crimson;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        /* Hide default HTML checkbox */
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        /* The slider */
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+        
+        input:checked+.slider {
+            background-color: #2196F3;
+        }
+        
+        input:focus+.slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+        
+        input:checked+.slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+        /* Rounded sliders */
+        
+        .slider.round {
+            border-radius: 34px;
+        }
+        
+        .slider.round:before {
+            border-radius: 50%;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        {% for id,res in data %}
+        {% for id,res,perm,acpperm in data %}
         <div class="child1">
             <div class="constpart">
                 <p>Quiz Id: {{id}}</p>
-                <button style="background:green;text-align:center;display:block;margin: 10px auto;" type="button" onclick="createcsv('{{id}}')">Create Csv</button>
+                <div class="wrappertoggle" style="display: flex;justify-content: space-between;align-items: center;margin: 20px auto;">
+
+                    <button style="background:green;text-align:center;" type="button" onclick="createcsv('{{id}}')">Create Csv</button>
+                    <div class="wrapperstch">
+                        Show Responses:
+                        <label class="switch">
+                    {% if not perm %}
+                    <input type="checkbox" onchange="changeressetting('{{id}}',this)">
+                    {% else %}
+                    <input type="checkbox" onchange="changeressetting('{{id}}',this)" checked>
+                    {% endif %}
+                    <span class="slider round"></span></label>
+                    </div>
+                    <div class="wrapperstch">
+                        Accepting Response:
+                        <label class="switch">
+                    {% if not acpperm %}
+                    <input type="checkbox" onchange="acpresp('{{id}}',this)">
+                    {% else %}
+                    <input type="checkbox" onchange="acpresp('{{id}}',this)" checked>
+                    {% endif %}
+                    <span class="slider round"></span></label>
+                    </div>
+                </div>
                 <div style="display:flex;justify-content:space-between;align-items:center;">
                     <h3>Responses: <span id="tr-{{forloop.counter0}}">{{res}}</span></h3>
+                    <button onclick="window.location.href='/survey/{{id}}'" style="background:purple;position:relative;padding: 6px 18px;">Survey<span style="position: absolute;top: 0;display: block;right: 0;font-size: 9px;">Beta</span></button>
                     <button type="button" onclick="mohitfuncdel('{{id}}',this);">Delete Quiz</button>
                 </div>
             </div>
@@ -54,7 +141,7 @@
 <script>
     async function mohitfuncdel(id, btn) {
         a = prompt("Type delete (small letters) for confirm delete");
-        if(a!="delete")
+        if (a != "delete")
             return;
         let response = await fetch('/deletequiz', {
             credentials: 'include',
@@ -82,7 +169,7 @@
         }
     }
 
-    async function createcsv(id){
+    async function createcsv(id) {
         let response = await fetch('/createcsv', {
             credentials: 'include',
             method: 'POST',
@@ -101,7 +188,7 @@
             let message = json["message"]
             if (message == "success") {
                 window.location.href = json["path"];
-            }else{
+            } else {
                 alert(message);
             }
         } else {
@@ -109,10 +196,42 @@
         }
     }
 
-    async function delresp(id,email,elm,headid){
+    async function delresp(id, email, elm, headid) {
         var inp = prompt("Type delete (small letters) to delete correspondes response")
-        if(inp=='delete'){
-        let response = await fetch('/deluserresponse', {
+        if (inp == 'delete') {
+            let response = await fetch('/deluserresponse', {
+                credentials: 'include',
+                method: 'POST',
+                mode: 'same-origin',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "quiz_id": id,
+                    "email": email
+                })
+            })
+            if (response.ok) {
+                let json = await response.json();
+                let message = json["message"]
+                if (message == "success") {
+                    var temp = parseInt(document.getElementById(headid).textContent)
+                    temp -= 1
+                    document.getElementById(headid).textContent = temp;
+                    elm.parentElement.remove()
+                } else {
+                    alert(message);
+                }
+            } else {
+                alert("HTTP-Error: " + response.status);
+            }
+        }
+
+    }
+
+    async function changeressetting(id, elm) {
+        let response = await fetch('/updatequizperm', {
             credentials: 'include',
             method: 'POST',
             mode: 'same-origin',
@@ -121,26 +240,44 @@
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                "quiz_id": id,
-                "email": email
+                "quiz_id": id
             })
         })
         if (response.ok) {
             let json = await response.json();
             let message = json["message"]
-            if (message == "success") {
-                var temp = parseInt(document.getElementById(headid).textContent)
-                temp -= 1
-                document.getElementById(headid).textContent = temp;
-                elm.parentElement.remove()
-            }else{
+            if (message == "success") {} else {
+                elm.checked = false;
                 alert(message);
             }
         } else {
             alert("HTTP-Error: " + response.status);
         }
-        }
+    }
 
+    async function acpresp(id,elm){
+        let response = await fetch('/changeacceptrespapi', {
+            credentials: 'include',
+            method: 'POST',
+            mode: 'same-origin',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "quiz_id": id
+            })
+        })
+        if (response.ok) {
+            let json = await response.json();
+            let message = json["message"]
+            if (message == "success") {} else {
+                elm.checked = false;
+                alert(message);
+            }
+        } else {
+            alert("HTTP-Error: " + response.status);
+        }
     }
 </script>
 

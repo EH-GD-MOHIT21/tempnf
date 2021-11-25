@@ -11,6 +11,8 @@ class QuizManager(models.Model):
     creator = models.ForeignKey(User,on_delete=models.CASCADE)
     desc = models.TextField()
     date = models.DateTimeField(null=True,blank=True)
+    show_response = models.BooleanField(default=False)
+    accept_response = models.BooleanField(default=True)
 
     def __str__(self):
         return "QuizId: "+self.token
@@ -80,5 +82,16 @@ class MCQTypeUserResponses(models.Model):
     answer = models.TextField()
     final_marks = models.FloatField(default=0)
 
+    def __str__(self):
+        return str(self.code)
+
+
+class option_survey_mcq_response(models.Model):
+    code = models.ForeignKey(MCQTypeUserResponses,on_delete=models.CASCADE)
+    option1 = models.FloatField(default=0)
+    option2 = models.FloatField(default=0)
+    option3 = models.FloatField(default=0)
+    option4 = models.FloatField(default=0)
+    
     def __str__(self):
         return str(self.code)

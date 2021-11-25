@@ -12,7 +12,7 @@ Generate spreadsheet according to questions and responses
 
 if possible
 
-in survey type forms add functionality to pie chart like graphs to show ui.
+in survey type forms add functionality to pie chart like graphs to show ui. --> (beta version launched.)
 
 
 
@@ -21,4 +21,14 @@ to be change
 check mcq at the time of submit not the time of shown response --> done(Beta)
 
 
-# make responsive whole web(login changed)
+# make responsive whole web(login changed) --> pending last task of project 
+
+# make creatoraccesspage attractive modify userview
+
+# on login and signup page error msg(user not exist wrong creds not visible)
+
+# recheck delete form/quiz api and check perms  --> (almost done)
+
+# create csv + survey for normal forms
+
+# time limited quizzes 

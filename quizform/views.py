@@ -49,6 +49,8 @@ def FillQuiz(request,quiz_id):
 
     try:
         model = QuizManager.objects.get(token=quiz_id)
+        if not model.accept_response:
+            return render(request,'confirm.html',{'message':'This quiz is no longer accepting responses.'})
         mcqques = QuizMCQquestions.objects.filter(code=model)
         filltype = QuizFillTypeQuestions.objects.filter(code=model)
         answers = QuizMCQAnswers.objects.filter(code=model)
@@ -113,6 +115,8 @@ def SaveQuizResposnes(request,quiz_id):
         return redirect('/login')
     try:
         code = QuizManager.objects.get(token=quiz_id)
+        if not code.accept_response:
+            return render(request,'confirm.html',{'message':'This Form is no longer accepting response.'})
     except:
         return render(request,'quiz_confirmation.html',{"message":"Quiz Not Found With Provided Token"})
     # fill type answers
@@ -180,8 +184,12 @@ def ManageQuizes(request):
         return redirect('/login')
     quizzes_codes = []
     all_quizes = QuizManager.objects.filter(mail=request.user.email)
+    permissions = []
+    accepting = []
     for quiz in all_quizes:
         quizzes_codes.append(quiz.token)
+        permissions.append(quiz.show_response)
+        accepting.append(quiz.accept_response)
     
     total_res = []
     responses = []
@@ -192,7 +200,7 @@ def ManageQuizes(request):
             temp.append(dat.email)
         responses.append(temp)
         total_res.append(len(data))
-    data = zip(quizzes_codes,total_res)
+    data = zip(quizzes_codes,total_res,permissions,accepting)
 
     for form in quizzes_codes:
         return render(request,'managequizes.html',{'data':data,'mail':request.user.username,'resdata':responses})
@@ -208,6 +216,8 @@ def showresponses(request,quiz_id):
     try:
         email = request.GET["email"]
         quiz = QuizManager.objects.get(token=quiz_id)
+        if not quiz.show_response and not request.user.is_superuser and request.user.email != quiz.mail:
+            return render(request,'confirm.html',{'message':'You need permissions.'})
         title = quiz.title
         desc = quiz.desc
         author = quiz.creator.first_name + " " + quiz.creator.last_name
@@ -372,3 +382,39 @@ def delete_response_api(request):
         return JsonResponse({'status':200,'message':'success'})
     except:
         return JsonResponse({'status':404,'message':'User response not exists.'})
+
+
+@csrf_exempt
+def set_quiz_res_visibility_Api(request):
+    if not request.user.is_authenticated or not request.method == "POST":
+        return JsonResponse({'status':400,'message':'Invalid Request.'})
+    body = json.loads(request.body)
+    quiz_id = body.get("quiz_id")
+    try:
+        quiz = QuizManager.objects.get(token=quiz_id,mail=request.user.email)
+        if quiz.show_response:
+            quiz.show_response = False
+        else:
+            quiz.show_response = True
+        quiz.save()
+        return JsonResponse({'status':200,'message':'success'})
+    except:
+        return JsonResponse({'status':404,'message':'Invalid Quiz Id.'})
+
+
+@csrf_exempt
+def set_accepting_respquiz_api(request):
+    if not request.user.is_authenticated or not request.method == "POST":
+        return JsonResponse({'status':400,'message':'Invalid Request.'})
+    body = json.loads(request.body)
+    quiz_id = body.get("quiz_id")
+    try:
+        quiz = QuizManager.objects.get(token=quiz_id,mail=request.user.email)
+        if quiz.accept_response:
+            quiz.accept_response = False
+        else:
+            quiz.accept_response = True
+        quiz.save()
+        return JsonResponse({'status':200,'message':'success'})
+    except:
+        return JsonResponse({'status':404,'message':'Invalid Quiz Id.'})

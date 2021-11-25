@@ -8,20 +8,130 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Creator Page @ NestedForms.com</title>
     <link rel="stylesheet" href="{% static 'creator.css' %}">
+    <style>
+        button {
+            padding: 6px 10px;
+            color: white;
+            background: crimson;
+            border: 1px solid gray;
+            border-radius: 4px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        
+        li:hover {
+            text-decoration: underline;
+            color: crimson;
+            cursor: pointer;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        /* Hide default HTML checkbox */
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        /* The slider */
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+        
+        input:checked+.slider {
+            background-color: #2196F3;
+        }
+        
+        input:focus+.slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+        
+        input:checked+.slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+        /* Rounded sliders */
+        
+        .slider.round {
+            border-radius: 34px;
+        }
+        
+        .slider.round:before {
+            border-radius: 50%;
+        }
+    </style>
 </head>
 
 <body>
     <div class="container">
-        {% for id,res in data %}
+        {% for id,res,perm,acpperm in data %}
         <div class="child1">
-            <div class="constpart">
-                <p>Form Id: {{id}}</p>
-                <h3>Responses: {{res}}</h3>
+            
+            <p>Form Id: {{id}}</p>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;margin:20px auto;">
+                <button type="button" onclick="createcsv('{{id}}')" style="background:green;">Create Csv</button>
+                <div class="wrapperstch">
+                    Show Responses:
+                    <label class="switch">
+                    {% if not perm %}
+                        <input type="checkbox" onchange="changeressetting('{{id}}',this)">
+                    {% else %}
+                        <input type="checkbox" onchange="changeressetting('{{id}}',this)" checked>
+                    {% endif %}
+                    <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="wrapperstch">
+                    Accepting Response:
+                    <label class="switch">
+                    {% if not acpperm %}
+                        <input type="checkbox" onchange="changeacpres('{{id}}',this)">
+                    {% else %}
+                        <input type="checkbox" onchange="changeacpres('{{id}}',this)" checked>
+                    {% endif %}
+                    <span class="slider round"></span>
+                    </label>
+                </div>
             </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;margin:10px auto;">
+                <h3>Responses: <span id="tr-{{forloop.counter0}}">{{res}}</spna></h3>
+                <button type="button" style="background:purple;">Survey</button>
+                <button type="button" onclick="mohitfuncdel('{{id}}',this);">Delete Quiz</button>
+            </div>
+
             <div class="wrapperconstpart">
                 {% for data in resdata|index:forloop.counter0 %}
                 <div class="childconstpart">
-                    <li>{{data}}</li>
+                    <li onclick="delresp('{{id}}','{{data}}',this,'tr-{{forloop.parentloop.counter0}}')" style="cursor:pointer;">{{data}}</li>
                     <a href="showresponses/{{id}}/filter?email={{data}}">View Response</a>
                 </div>
                 {% endfor %}
@@ -32,5 +142,145 @@
     <h3 style="text-align:center;color:crimson;margin:20px auto;">To manage quizes <a href="/managequizes">click here</a></h3>
     <h4>{{mail}} is recorded while creating Form.</h4>
 </body>
+    <script>
+        async function changeressetting(id, elm) {
+        let response = await fetch('/updateformperm', {
+            credentials: 'include',
+            method: 'POST',
+            mode: 'same-origin',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "form_id": id
+            })
+        })
+        if (response.ok) {
+            let json = await response.json();
+            let message = json["message"]
+            if (message == "success") {} else {
+                elm.checked = false;
+                alert(message);
+            }
+        } else {
+            alert("HTTP-Error: " + response.status);
+        }
+    }
 
+    async function mohitfuncdel(id, btn) {
+        a = prompt("Type delete (small letters) for confirm delete");
+        if (a != "delete")
+            return;
+        let response = await fetch('/deleteform', {
+            credentials: 'include',
+            method: 'POST',
+            mode: 'same-origin',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "form_id": id,
+                "email": "{{request.user.email}}"
+            })
+        })
+        if (response.ok) {
+            let json = await response.json();
+            let message = json["message"]
+            if (message == "success") {
+                btn.parentElement.parentElement.remove()
+                    //qtotalearned
+            }
+            alert(message);
+        } else {
+            alert("HTTP-Error: " + response.status);
+        }
+    }
+
+    async function delresp(id, email, elm, headid) {
+        var inp = prompt("Type delete (small letters) to delete correspondes response")
+        if (inp == 'delete') {
+            let response = await fetch('/delformresponse', {
+                credentials: 'include',
+                method: 'POST',
+                mode: 'same-origin',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "form_id": id,
+                    "email": email
+                })
+            })
+            if (response.ok) {
+                let json = await response.json();
+                let message = json["message"]
+                if (message == "success") {
+                    var temp = parseInt(document.getElementById(headid).textContent)
+                    temp -= 1
+                    document.getElementById(headid).textContent = temp;
+                    elm.parentElement.remove()
+                } else {
+                    alert(message);
+                }
+            } else {
+                alert("HTTP-Error: " + response.status);
+            }
+        }
+
+    }
+    async function changeacpres(id,elm){
+        let response = await fetch('/setacpformrespapi', {
+            credentials: 'include',
+            method: 'POST',
+            mode: 'same-origin',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "form_id": id
+            })
+        })
+        if (response.ok) {
+            let json = await response.json();
+            let message = json["message"]
+            if (message == "success") {} else {
+                elm.checked = false;
+                alert(message);
+            }
+        } else {
+            alert("HTTP-Error: " + response.status);
+        }
+    }
+
+    async function createcsv(id) {
+        let response = await fetch('/createcsvform', {
+            credentials: 'include',
+            method: 'POST',
+            mode: 'same-origin',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "form_id": id,
+                "email": "{{request.user.email}}"
+            })
+        })
+        if (response.ok) {
+            let json = await response.json();
+            let message = json["message"]
+            if (message == "success") {
+                window.location.href = json["path"];
+            } else {
+                alert(message);
+            }
+        } else {
+            alert("HTTP-Error: " + response.status);
+        }
+    }
+    </script>
 </html>
