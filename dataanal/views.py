@@ -55,5 +55,5 @@ def Create_Csv_User_Marks_Api(request):
         users.append(codes.name)
         emails.append(codes.email)
     create_csv_base_data(users,final_marks_set,emails,quiz_id)
-    filepath =  "/media/" + quiz_id+".csv"
+    filepath =  "/media/" + quiz_id+".xlsx"
     return JsonResponse({'status':200,'message':'success','path':filepath})

@@ -89,6 +89,6 @@ def Create_Csv_Resp_forms(request):
             d[mcq_qus[j]][i] = mcq_ans[i][j]
 
     df = pd.DataFrame(d)
-    df.to_csv(os.path.join(settings.BASE_DIR,f'media/{form_id}.csv'),index=False)
-    filepath =  "/media/" + form_id+".csv"
+    df.to_excel(os.path.join(settings.BASE_DIR,f'media/{form_id}.xlsx'),index=False)
+    filepath =  "/media/" + form_id+".xlsx"
     return JsonResponse({'status':200,'message':'success','path':filepath})
