@@ -126,6 +126,9 @@ def fillform(request,formid=None):
 
         if not (timezone.now() >= myformdata.open_at and timezone.now() <= myformdata.open_till):
             return render(request,'confirm.html',{'message':f'Server Time for fill the form is between {myformdata.open_at} and {myformdata.open_till}'})
+
+    elif not myformdata.accept_response:
+        return render(request,'confirm.html',{'message':'This Form is no longer accepting response.'})
     
     fmcq = formMCQquestions.objects.filter(code=myformdata)
     ftpq = formFillTypeQuestions.objects.filter(code=myformdata)
