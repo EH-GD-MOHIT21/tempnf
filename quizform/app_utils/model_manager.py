@@ -2,6 +2,7 @@ from quizform.models import *
 from django.conf import settings
 from random import choice,randint
 from datetime import datetime
+import pytz
 
 def token_generator():
     chars = settings.VALID_CHARS
@@ -29,6 +30,30 @@ def QuizManagerObjectCreator(request):
     model.desc = request.POST["formdesc"]
     model.token = token_generator()
     model.set_time
+    open_at = request.POST['opentime']
+    open_till = request.POST['closetime']
+    if open_at!='' and open_till!='':
+        try:
+            date,time = open_at.split('T')
+            year,month,day = date.split('-')
+            hour,minute = time.split(':')
+            date = f'{day}/{month}/{year} {hour}:{minute}:00'
+            format  = "%d/%m/%Y %H:%M:%S"
+            temp = datetime.strptime(date,format)
+            temp = temp.astimezone(pytz.UTC)
+            open_at = temp
+            date,time = open_till.split('T')
+            year,month,day = date.split('-')
+            hour,minute = time.split(':')
+            date = f'{day}/{month}/{year} {hour}:{minute}:00'
+            format  = "%d/%m/%Y %H:%M:%S"
+            temp = datetime.strptime(date,format)
+            temp = temp.astimezone(pytz.UTC)
+            open_till = temp
+            model.open_at = open_at
+            model.open_till = open_till
+        except:
+            pass
     model.save()
     return (model.token,model)
 

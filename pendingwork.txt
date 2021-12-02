@@ -1,6 +1,5 @@
 add date of form created in quiz and normal form both  --> almost done
 modify creator access page add quiz response also add django pagination if possible
-add custom option of marks while creating a quiz  --> done
 
 
 to be updated
@@ -15,20 +14,19 @@ if possible
 in survey type forms add functionality to pie chart like graphs to show ui. --> (beta version launched.)
 
 
-
-to be change 
-
-check mcq at the time of submit not the time of shown response --> done(Beta)
-
-
 # make responsive whole web(login changed) --> pending last task of project 
 
-# make creatoraccesspage attractive modify userview
+# make creatoraccesspage attractive modify userview 
 
 # on login and signup page error msg(user not exist wrong creds not visible)
 
 # recheck delete form/quiz api and check perms  --> (almost done)
 
-# create csv + survey for normal forms
+# create csv + survey for normal forms  --> --done
 
-# time limited quizzes 
+# time limited quizzes  -- done
+
+
+----  to be fixed ----
+# something wrong with form survey and quiz reported not working properly.  -- fixed
+---- to be fixed ----

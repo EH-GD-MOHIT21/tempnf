@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 # Create your models here.
 
@@ -9,8 +10,17 @@ class formpublicdata(models.Model):
     mail = models.EmailField()
     creator = models.CharField(max_length=40)
     desc = models.TextField()
+    date = models.DateTimeField(null=True,blank=True)
     show_response = models.BooleanField(default=False)
     accept_response = models.BooleanField(default=True)
+    # time on which quiz has to be open
+    open_at = models.DateTimeField(null=True,blank=True)
+    # time on which quiz has to be close
+    open_till = models.DateTimeField(null=True,blank=True)
+
+    @property
+    def set_date(self):
+        self.date = timezone.now()
 
 
 class formMCQquestions(models.Model):

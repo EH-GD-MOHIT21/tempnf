@@ -90,7 +90,7 @@
 
 <body>
     <div class="container">
-        {% for id,res,perm,acpperm in data %}
+        {% for id,res,perm,acpperm,isres,oa,ot in data %}
         <div class="child1">
             <div class="constpart">
                 <p>Quiz Id: {{id}}</p>
@@ -107,6 +107,7 @@
                     {% endif %}
                     <span class="slider round"></span></label>
                     </div>
+                    {% if not isres %}
                     <div class="wrapperstch">
                         Accepting Response:
                         <label class="switch">
@@ -117,14 +118,23 @@
                     {% endif %}
                     <span class="slider round"></span></label>
                     </div>
+                    {% else %}
+                    <a href="/updatetime/{{id}}">Change Schedule</a>
+                    {% endif %}
                 </div>
+                {% if isres %}
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h4>Open at: {{oa}}</h4>
+                        <h4>Open till: {{ot}}</h4>
+                    </div>
+                {% endif %}
                 <div style="display:flex;justify-content:space-between;align-items:center;">
                     <h3>Responses: <span id="tr-{{forloop.counter0}}">{{res}}</span></h3>
                     <button onclick="window.location.href='/survey/{{id}}'" style="background:purple;position:relative;padding: 6px 18px;">Survey<span style="position: absolute;top: 0;display: block;right: 0;font-size: 9px;">Beta</span></button>
                     <button type="button" onclick="mohitfuncdel('{{id}}',this);">Delete Quiz</button>
                 </div>
             </div>
-            <div class="wrapperconstpart" style="overflow-x: auto;max-height:75vh;">
+            <div class="wrapperconstpart" style="overflow-x: auto;max-height:120px;">
                 {% for data in resdata|index:forloop.counter0 %}
                 <div class="childconstpart">
                     <li onclick="delresp('{{id}}','{{data}}',this,'tr-{{forloop.parentloop.counter0}}')" style="cursor:pointer;">{{data}}</li>
@@ -135,8 +145,10 @@
         </div>
         {% endfor %}
     </div>
+    
     <h3 style="text-align:center;color:crimson;margin:20px auto;">To manage forms <a href="/creatoraccesspage">click here</a></h3>
     <h4>{{mail}} is recorded while creating Form.</h4>
+    <h4>All Times Mentioned above are in form of UTC</h4>
 </body>
 <script>
     async function mohitfuncdel(id, btn) {

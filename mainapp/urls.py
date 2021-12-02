@@ -14,7 +14,6 @@ urlpatterns = [
     path('fillformuser',views.fillformuser),
     path('showresponses/<slug:formid>/filter',views.showresponsepage),
     path('manageforms',views.creatorpageview),
-    path('creatoraccesspage',views.creatorpageview), # to be changed
     path('updateformperm',views.set_form_res_visibility_Api),
     path('deleteform',views.delete_form_api),
     path('delformresponse',views.delete_form_response_api),

@@ -9,6 +9,9 @@
     <title>Creator Page @ NestedForms.com</title>
     <link rel="stylesheet" href="{% static 'creator.css' %}">
     <style>
+        h3{
+            flex:0.5;
+        }
         button {
             padding: 6px 10px;
             color: white;
@@ -23,6 +26,13 @@
             text-decoration: underline;
             color: crimson;
             cursor: pointer;
+        }
+
+        .surdelbtns {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex: 0.9;
         }
 
         .switch {
@@ -86,49 +96,109 @@
         .slider.round:before {
             border-radius: 50%;
         }
+        .childconstpart li{
+            margin-right: 8px;
+        }
+        .childconstpart a{
+            margin-left: 8px;
+        }
+        .wrapperdivspar{
+            display: flex;
+            align-items: center;
+            flex: 3;
+            justify-content: space-evenly;
+        }
+        @media(max-width:650px){
+            .container,.child1{
+                width: 98%;
+            }
+            .pdiv {
+                flex-direction: column;
+            }
+            .pdiv button,.pdiv a,.pdiv div{
+                margin: 5px 0;
+            }
+            .wrapperdivspar {
+                justify-content: space-between;
+                width: 100%;
+            }
+        }
+        @media(max-width:450px){
+            .btns-cntr{
+                flex-direction: column;
+            }
+            .btns-cntr h3,.btns-cntr button{
+                margin: 5px auto;
+            }
+            .wrapperdivspar{
+                flex-direction: column;
+            }
+            h3{
+                flex:1;
+            }
+            .surdelbtns{
+                width: 100%;
+            }
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        {% for id,res,perm,acpperm in data %}
+        {% for id,res,perm,acpperm,isres,oa,ot in data %}
         <div class="child1">
             
             <p>Form Id: {{id}}</p>
 
-            <div style="display:flex;justify-content:space-between;align-items:center;margin:20px auto;">
-                <button type="button" onclick="createcsv('{{id}}')" style="background:green;">Create Csv</button>
-                <div class="wrapperstch">
-                    Show Responses:
-                    <label class="switch">
-                    {% if not perm %}
-                        <input type="checkbox" onchange="changeressetting('{{id}}',this)">
+            <div class="pdiv" style="display:flex;justify-content:space-between;align-items:center;margin:20px auto;">
+                <button type="button" onclick="createcsv('{{id}}')" style="background:green;flex:0.5;">Create Csv</button>
+                <div class="wrapperdivspar">
+                    <div class="wrapperstch">
+                        Show Responses:
+                        <label class="switch">
+                        {% if not perm %}
+                            <input type="checkbox" onchange="changeressetting('{{id}}',this)">
+                        {% else %}
+                            <input type="checkbox" onchange="changeressetting('{{id}}',this)" checked>
+                        {% endif %}
+                        <span class="slider round"></span>
+                        </label>
+                    </div>
+                    {% if not isres %}
+                    <div class="wrapperstch">
+                        Accepting Response:
+                        <label class="switch">
+                        {% if not acpperm %}
+                            <input type="checkbox" onchange="changeacpres('{{id}}',this)">
+                        {% else %}
+                            <input type="checkbox" onchange="changeacpres('{{id}}',this)" checked>
+                        {% endif %}
+                        <span class="slider round"></span>
+                        </label>
+                    </div>
                     {% else %}
-                        <input type="checkbox" onchange="changeressetting('{{id}}',this)" checked>
+                    <a href="/updatetime/{{id}}">Change Schedule</a>
                     {% endif %}
-                    <span class="slider round"></span>
-                    </label>
-                </div>
-                <div class="wrapperstch">
-                    Accepting Response:
-                    <label class="switch">
-                    {% if not acpperm %}
-                        <input type="checkbox" onchange="changeacpres('{{id}}',this)">
-                    {% else %}
-                        <input type="checkbox" onchange="changeacpres('{{id}}',this)" checked>
-                    {% endif %}
-                    <span class="slider round"></span>
-                    </label>
                 </div>
             </div>
 
-            <div style="display:flex;justify-content:space-between;align-items:center;margin:10px auto;">
+            {% if isres %}
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                <h4 style="margin-right:8px;">Open at: {{oa}}</h4>
+                <h4 style="margin-left:8px;">Open till: {{ot}}</h4>
+            </div>
+            {% endif %}
+
+            <div class="btns-cntr" style="display:flex;justify-content:space-between;align-items:center;margin:10px auto;">
                 <h3>Responses: <span id="tr-{{forloop.counter0}}">{{res}}</spna></h3>
-                <button type="button" style="background:purple;">Survey</button>
+                    <div class="surdelbtns">
+                <button type="button" style="background:purple;" onclick="window.location.href='/surveyform/{{id}}'">Survey</button>
                 <button type="button" onclick="mohitfuncdel('{{id}}',this);">Delete Quiz</button>
+
+                    </div>
             </div>
 
-            <div class="wrapperconstpart">
+            <div class="wrapperconstpart" style="overflow-x: auto;max-height:120px;">
                 {% for data in resdata|index:forloop.counter0 %}
                 <div class="childconstpart">
                     <li onclick="delresp('{{id}}','{{data}}',this,'tr-{{forloop.parentloop.counter0}}')" style="cursor:pointer;">{{data}}</li>
@@ -141,6 +211,7 @@
     </div>
     <h3 style="text-align:center;color:crimson;margin:20px auto;">To manage quizes <a href="/managequizes">click here</a></h3>
     <h4>{{mail}} is recorded while creating Form.</h4>
+    <h4>All Times Mentioned above are in form of UTC</h4>
 </body>
     <script>
         async function changeressetting(id, elm) {

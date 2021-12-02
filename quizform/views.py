@@ -49,6 +49,10 @@ def FillQuiz(request,quiz_id):
 
     try:
         model = QuizManager.objects.get(token=quiz_id)
+        if model.open_at != None and model.open_till != None:
+            if not (timezone.now() >= model.open_at and timezone.now() <= model.open_till):
+                return render(request,'confirm.html',{'message':f'Server Time for fill the quiz is between {model.open_at} and {model.open_till}'})
+
         if not model.accept_response:
             return render(request,'confirm.html',{'message':'This quiz is no longer accepting responses.'})
         mcqques = QuizMCQquestions.objects.filter(code=model)
@@ -98,12 +102,20 @@ def FillQuiz(request,quiz_id):
             "cur_user":request.user.email,
             "total_marks":total_marks,
         }
+
+        try:
+            del_time = model.open_till-timezone.now()
+            hours,minutes,seconds = map(float,str(del_time).split(':'))
+            total_seconds = hours*60*60 + minutes*60 + seconds
+        except:
+            total_seconds = 0
             
 
         return render(request,'fillquiz.html',{
             "upper":upper,
             "mcqs":mcqs,
-            "filltype": zip(fillques,marksfilltype)
+            "filltype": zip(fillques,marksfilltype),
+            "opentill":int(total_seconds)
         })
     except Exception as e:
         return render(request,'quiz_confirmation.html',{"message":"Quiz Not Found With Provided Token"})
@@ -116,9 +128,15 @@ def SaveQuizResposnes(request,quiz_id):
     try:
         code = QuizManager.objects.get(token=quiz_id)
         if not code.accept_response:
-            return render(request,'confirm.html',{'message':'This Form is no longer accepting response.'})
+            return render(request,'confirm.html',{'message':'This quiz is no longer accepting response.'})
     except:
         return render(request,'quiz_confirmation.html',{"message":"Quiz Not Found With Provided Token"})
+
+    if code.open_at != None and code.open_till != None:
+
+        if not (timezone.now() >= code.open_at and timezone.now() <= code.open_till):
+            return render(request,'confirm.html',{'message':f'Server Time for fill the quiz is between {code.open_at} and {code.open_till}. Your Responses can not be save.'})
+
     # fill type answers
     try:
         base_submitted_form_data.objects.get(token=quiz_id,email=request.user.email)
@@ -186,10 +204,28 @@ def ManageQuizes(request):
     all_quizes = QuizManager.objects.filter(mail=request.user.email)
     permissions = []
     accepting = []
+    is_sch = []
+    open_at = []
+    open_till = []
     for quiz in all_quizes:
         quizzes_codes.append(quiz.token)
         permissions.append(quiz.show_response)
-        accepting.append(quiz.accept_response)
+        if type(quiz.open_at)==type(timezone.now()) and type(quiz.open_till)==type(timezone.now()):
+            if timezone.now() >= quiz.open_at and timezone.now() <= quiz.open_till:
+                accepting.append(True)
+                if not quiz.accept_response:
+                    quiz.accept_response = True
+                    quiz.save()
+            else:
+                quiz.accept_response = False
+                quiz.save()
+                accepting.append(False)
+            is_sch.append(True)
+        else:
+            accepting.append(quiz.accept_response)
+            is_sch.append(False)
+        open_at.append(quiz.open_at)
+        open_till.append(quiz.open_till)
     
     total_res = []
     responses = []
@@ -200,9 +236,9 @@ def ManageQuizes(request):
             temp.append(dat.email)
         responses.append(temp)
         total_res.append(len(data))
-    data = zip(quizzes_codes,total_res,permissions,accepting)
+    data = zip(quizzes_codes,total_res,permissions,accepting,is_sch,open_at,open_till)
 
-    for form in quizzes_codes:
+    for quiz in quizzes_codes:
         return render(request,'managequizes.html',{'data':data,'mail':request.user.username,'resdata':responses})
     return render(request,'confirm.html',{'message':'You Have Not created Any Quizzes please create some.'})
     
@@ -410,6 +446,11 @@ def set_accepting_respquiz_api(request):
     quiz_id = body.get("quiz_id")
     try:
         quiz = QuizManager.objects.get(token=quiz_id,mail=request.user.email)
+        if type(quiz.open_at)==type(timezone.now()) and type(quiz.open_till)==type(timezone.now()):
+            if quiz.open_till < timezone.now():
+                return JsonResponse({'status':200,'message':'Please Change Schedule of quiz to continue accepting response.'})
+            else:
+                return JsonResponse({'status':200,'message':'This Quiz is a schedule quiz please change schedule to stop receiving response.'})
         if quiz.accept_response:
             quiz.accept_response = False
         else:

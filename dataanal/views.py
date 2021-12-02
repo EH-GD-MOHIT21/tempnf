@@ -43,6 +43,7 @@ def Create_Csv_User_Marks_Api(request):
     users = []
     final_marks_set = []
     emails = []
+    
     for codes in code1:
         outcome = 0
         ftps = FillTypeUserResponses.objects.filter(code=codes)
@@ -54,6 +55,6 @@ def Create_Csv_User_Marks_Api(request):
         final_marks_set.append(outcome)
         users.append(codes.name)
         emails.append(codes.email)
-    create_csv_base_data(users,final_marks_set,emails,quiz_id)
+    create_csv_base_data(users,final_marks_set,emails,quiz_id,total_marks)
     filepath =  "/media/" + quiz_id+".xlsx"
     return JsonResponse({'status':200,'message':'success','path':filepath})

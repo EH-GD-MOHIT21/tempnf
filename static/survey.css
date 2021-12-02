@@ -43,6 +43,7 @@ body {
 .piechartwrapper {
     display: flex;
     align-items: center;
+    justify-content: space-between;
 }
 
 .wrappercontainer {
@@ -52,8 +53,4 @@ body {
     padding: 10px;
     margin: 20px auto;
     text-align: center;
-}
-
-.piechartlegend {
-    margin-left: 25% !important;
 }

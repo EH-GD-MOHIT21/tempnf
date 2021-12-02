@@ -8,6 +8,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Survey @ NestedForms.com</title>
     <link rel="stylesheet" href="{% static 'survey.css' %}">
+    <style>
+        @media(max-width:650px){
+            .container{
+                width: 98%;
+            }
+            .piechartwrapper{
+                flex-direction: column;
+            }
+            .piechartlegend{
+                margin-top:15px;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -50,6 +63,10 @@
         </div>
         </div>
         {% endfor %}
+
+        {% if additional %}
+            here we'll add support to ftp analyse.
+        {% endif %}
 
         <div class="footer" style="text-align:center;">
             {{user.email}} is recorded while created form/quiz.

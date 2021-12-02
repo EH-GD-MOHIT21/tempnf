@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard @ Nested Forms</title>
+    <link rel="stylesheet" href="{% static 'creator.css' %}">
+    <style>
+        .parentcontainer {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .parentcontainer .container .child1 {
+            border-left: 5px solid #4285f4;
+            border-top: none;
+        }
+        .parentcontainer .container .child1 .formdetailscontainer{
+            overflow-y: auto;
+            max-height: 400px;
+        }
+        .container,.child1{
+            margin: 10px auto !important;
+            width: 700px;
+        }
+        .formdetailscontainer{
+            padding: 10px 15px !important;
+        }
+        .formdetails{
+            border: 1px solid black;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .formdetails p{
+            margin-top: 7px;
+            font-size: 14px;
+        }
+        .child1 ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+            }
+        .child1 ::-webkit-scrollbar-track {
+            border: 1px solid #00bcd4;
+            border-radius: 10px;
+            }
+        .child1 ::-webkit-scrollbar-thumb {
+            background: #00bcd4;
+            border-radius: 10px;
+            }
+        .child1 ::-webkit-scrollbar-thumb:hover {
+            background: #88ba1c;
+            }
+    </style>
+</head>
+
+<body>
+    <h2 style="text-align: center;margin-top:30px;">Dashboard | <a href="/" style="color:black;">NestedForms.com</a></h2>
+    <div class="container">
+        <div class="child1">
+            <p style="font-size:20px;text-align:center;">Hey 👋 <strong>{{user.first_name}} {{user.last_name}}</strong></p>
+            <p style="text-align:right;margin:5px auto;">Total Forms: {{lenform}}</p>
+            <p style="text-align:right;margin:5px auto;">Total Quizzes: {{lenquiz}}</p>
+        </div>
+    </div>
+    <div class="parentcontainer">
+        <div class="container">
+            <div class="child1">
+                <a href="/managequizes" style="text-align: center;display: block;margin-bottom:20px;margin-top:10px;" target="_blank">To Manage Quizzes Click Here</a> 
+                <div class="formdetailscontainer">
+                {% for id,name,date in quizdata %}
+                <div class="formdetails" style="margin: 20px auto;">
+                    <h3 style="text-align: center;word-wrap: break-word;">{{name}}</h3>
+                    <p style="text-align: right;word-wrap: break-word;">Created on: {{date}}</p>
+                    <div style="display: flex;justify-content: space-around;align-items: center;margin: 10px auto;">
+                        <a href="/updatetime/{{id}}">Change Scheduling</a>
+                        <a href="/survey/{{id}}">Survey</a>
+                    </div>
+                </div>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="child1">
+                <a href="/manageforms" target="_blank" style="display: block;text-align: center;margin-bottom:20px;margin-top:10px;">To Manage Forms Click Here</a> 
+                <div class="formdetailscontainer">
+                {% for id,name,date in formdata %}
+                <div class="formdetails" style="margin: 20px auto;">
+                    <h3 style="text-align: center;word-wrap: break-word;">{{name}}</h3>
+                    <p style="text-align: right;word-wrap: break-word;">Created on: {{date}}</p>
+                    <div style="display: flex;justify-content: space-around;align-items: center;margin: 10px auto;">
+                        <a href="/updatetime/{{id}}">Change Scheduling</a>
+                        <a href="/surveyform/{{id}}">Survey</a>
+                    </div>
+                </div>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer style="text-align: center;margin: 10px auto;">
+        {{user.email}} is recorded while creating forms/quizzes.
+    </footer>
+</body>
+
+</html>

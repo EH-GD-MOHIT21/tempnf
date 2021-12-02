@@ -1,4 +1,6 @@
+from django.http.response import Http404
 from django.shortcuts import render,redirect
+from numpy import fabs
 from .models import formFillTypeQuestions, formFillTypeResponse, formMCQTypeResponse, formpublicdata,formMCQquestions,base_form_data_response as form_responses
 from django.views.decorators.csrf import csrf_exempt
 from random import choice,randint
@@ -6,6 +8,8 @@ from datetime import datetime
 import ast
 from django.http import JsonResponse
 import json
+from django.utils import timezone
+import pytz
 
 # Create your views here.
 
@@ -28,6 +32,11 @@ def saveresponse(request,formid=None):
         return render(request,'confirm.html',{'message':"You've already responded"})
     except Exception as e:
         pass
+
+    if myformdata.open_at != None and myformdata.open_till != None:
+
+        if not (timezone.now() >= myformdata.open_at and timezone.now() <= myformdata.open_till):
+            return render(request,'confirm.html',{'message':f'Server Time for fill the form is between {myformdata.open_at} and {myformdata.open_till}. Your Responses can not be save.'})
 
     if not myformdata.accept_response:
         return render(request,'confirm.html',{'message':'This Form is no longer accepting response.'})
@@ -111,6 +120,12 @@ def fillform(request,formid=None):
 
     if not myformdata.accept_response:
         return render(request,'confirm.html',{'message':'This Form is no longer accepting response.'})
+
+
+    if myformdata.open_at != None and myformdata.open_till != None:
+
+        if not (timezone.now() >= myformdata.open_at and timezone.now() <= myformdata.open_till):
+            return render(request,'confirm.html',{'message':f'Server Time for fill the form is between {myformdata.open_at} and {myformdata.open_till}'})
     
     fmcq = formMCQquestions.objects.filter(code=myformdata)
     ftpq = formFillTypeQuestions.objects.filter(code=myformdata)
@@ -132,9 +147,15 @@ def fillform(request,formid=None):
     content = {
         'mainlist':main_list
     }
+    try:
+        del_time = myformdata.open_till-timezone.now()
+        hours,minutes,seconds = map(float,str(del_time).split(':'))
+        total_seconds = hours*60*60 + minutes*60 + seconds
+    except:
+        total_seconds = 0
     for qus in ftpq:
         ftpqus.append(qus.question)
-    return render(request,'quiz.html',{'title':element.title,'desc':element.desc,'creator':element.creator,'mail':element.mail,'content':content,'formid':formid,'filltype':ftpqus})
+    return render(request,'quiz.html',{'title':element.title,'desc':element.desc,'creator':element.creator,'mail':element.mail,'content':content,'formid':formid,'filltype':ftpqus,'opentill':int(total_seconds)})
 
 
 
@@ -178,12 +199,38 @@ def savedetails(request):
     creatorname = request.POST['creatorname']
     desc = request.POST['formdesc']
 
+    open_at = request.POST['opentime']
+    open_till = request.POST['closetime']
+
     model = formpublicdata()
     model.token = personalcode
     model.title = title
     model.mail = mail
     model.creator = creatorname
     model.desc = desc
+    model.set_date
+    if open_at!='' and open_till!='':
+        try:
+            date,time = open_at.split('T')
+            year,month,day = date.split('-')
+            hour,minute = time.split(':')
+            date = f'{day}/{month}/{year} {hour}:{minute}:00'
+            format  = "%d/%m/%Y %H:%M:%S"
+            temp = datetime.strptime(date,format)
+            temp = temp.astimezone(pytz.UTC)
+            open_at = temp
+            date,time = open_till.split('T')
+            year,month,day = date.split('-')
+            hour,minute = time.split(':')
+            date = f'{day}/{month}/{year} {hour}:{minute}:00'
+            format  = "%d/%m/%Y %H:%M:%S"
+            temp = datetime.strptime(date,format)
+            temp = temp.astimezone(pytz.UTC)
+            open_till = temp
+            model.open_at = open_at
+            model.open_till = open_till
+        except:
+            pass
     model.save()
 
     mcqqus = request.POST.getlist("questionmcq")
@@ -331,12 +378,31 @@ def creatorpageview(request):
         formids = []
         view_perms = []
         fill_perms = []
+        is_sch = []
+        open_at = []
+        open_till = []
         for form in forms:
             formids.append(form.token)
             view_perms.append(form.show_response)
-            fill_perms.append(form.accept_response)
+            if type(form.open_at)==type(timezone.now()) and type(form.open_till)==type(timezone.now()):
+                if timezone.now() >= form.open_at and timezone.now() <= form.open_till:
+                    fill_perms.append(True)
+                    if not form.accept_response:
+                        form.accept_response = True
+                        form.save()
+                else:
+                    form.accept_response = False
+                    form.save()
+                    fill_perms.append(False)
+                is_sch.append(True)
+            else:
+                fill_perms.append(form.accept_response)
+                is_sch.append(False)
+            open_at.append(form.open_at)
+            open_till.append(form.open_till)
         total_res = []
         responses = []
+        
         for ids in formids:
             temp = []
             data = form_responses.objects.filter(token=ids)
@@ -344,7 +410,7 @@ def creatorpageview(request):
                 temp.append(dat.email)
             responses.append(temp)
             total_res.append(len(data))
-        data = zip(formids,total_res,view_perms,fill_perms)
+        data = zip(formids,total_res,view_perms,fill_perms,is_sch,open_at,open_till)
         # print(responses)
         for form in forms:
             return render(request,'creator.html',{'data':data,'mail':request.user.email,'resdata':responses})
@@ -423,6 +489,11 @@ def set_form_acpres_Api(request):
     form_id = body.get("form_id")
     try:
         form = formpublicdata.objects.get(token=form_id)
+        if type(form.open_at)==type(timezone.now()) and type(form.open_till)==type(timezone.now()):
+            if form.open_till < timezone.now():
+                return JsonResponse({'status':200,'message':'Please Change Schedule of quiz to continue accepting response.'})
+            else:
+                return JsonResponse({'status':200,'message':'This Quiz is a schedule quiz please change schedule to stop receiving response.'})
         if form.accept_response:
             form.accept_response = False
         else:

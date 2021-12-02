@@ -13,6 +13,10 @@ class QuizManager(models.Model):
     date = models.DateTimeField(null=True,blank=True)
     show_response = models.BooleanField(default=False)
     accept_response = models.BooleanField(default=True)
+    # time on which quiz has to be open
+    open_at = models.DateTimeField(null=True,blank=True)
+    # time on which quiz has to be close
+    open_till = models.DateTimeField(null=True,blank=True)
 
     def __str__(self):
         return "QuizId: "+self.token
