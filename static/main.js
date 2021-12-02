@@ -1,4 +1,5 @@
-document.getElementById('logbtn').addEventListener('click', mohit)
+document.getElementById('logbtn').addEventListener('click', mohit);
+log = "Nothing to show."
 
 
 async function mohit() {
@@ -18,11 +19,11 @@ async function mohit() {
     })
     if (response.ok) {
         document.getElementById('spinner').style.display = 'none';
-        // document.getElementById("verifier").style.display = 'block';
         let json = await response.json();
         let message = json["message"]
-        console.log(message);
+        log = message;
         if (message == 'otp send.') {
+            document.getElementById("verifier").style.background = "green";
             document.getElementById("otp").style.display = "block";
             document.getElementById("keyico").style.display = "block";
             try {
@@ -47,12 +48,13 @@ async function mohit() {
                 })
                 if (response.ok) {
                     document.getElementById('spinner').style.display = 'none';
-                    // document.getElementById("verifier").style.display = 'block';
                     let json = await response.json();
                     let message = json["message"]
-                    console.log(message);
+                    log = message;
                     if (message == 'success') {
                         window.location.replace('/')
+                    } else {
+                        document.getElementById("verifier").style.background = "crimson";
                     }
 
                 } else {
@@ -60,6 +62,8 @@ async function mohit() {
                     alert("HTTP-Error: " + response.status);
                 }
             })
+        } else {
+            document.getElementById("verifier").style.background = "crimson";
         }
 
     } else {
@@ -67,3 +71,7 @@ async function mohit() {
         alert("HTTP-Error: " + response.status);
     }
 }
+
+document.getElementById("verifier").addEventListener("click", function() {
+    alert(log);
+})

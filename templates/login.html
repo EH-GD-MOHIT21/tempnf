@@ -32,10 +32,16 @@
             align-items: center;
             position: relative;
             min-height: 100vh;
+            width: 600px !important;
+            max-width: 600px !important;
+        }
+        
+        a {
+            color: purple !important;
         }
         
         .cont1 {
-            width: 600px;
+            width: 600px !important;
             position: relative;
             border-radius: 5px;
             background: rgb(18, 172, 243);
@@ -61,13 +67,13 @@
         
         .personal {
             position: absolute;
-            left: 22%;
+            left: 21%;
             top: 15px;
         }
         
         .peye {
             position: absolute;
-            right: 22.5%;
+            right: 21.5%;
             top: 75px;
             cursor: pointer;
         }
@@ -108,18 +114,24 @@
         }
         
         @media(max-width:600px) {
-            .cont1 {
-                width: 98%;
+            .cont1,
+            .container {
+                width: 98% !important;
+                max-width: 98% !important;
+            }
+            .container {
+                padding-left: 0;
+                padding-right: 0;
             }
             input {
                 width: 98%;
             }
             .personal,
             .keyico {
-                left: 2.5%;
+                left: 3%;
             }
             .peye {
-                right: 2.5%;
+                right: 3%;
             }
         }
         
@@ -133,6 +145,10 @@
         .footerid a {
             color: white !important;
         }
+        
+        img {
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -141,7 +157,7 @@
     <div class="container" id="container">
 
         <div class="cont1">
-            <img src="{% static 'formimgs/admin.png' %}">
+            <img id="verifier" src="{% static 'formimgs/admin.png' %}">
 
             <form method="POST">
                 {% csrf_token %}
