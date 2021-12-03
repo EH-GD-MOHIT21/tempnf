@@ -15,7 +15,6 @@ import pytz
 
 
 def home(request):
-    print("server time is: ",timezone.now())
     return render(request,'home.html')
 
 
@@ -231,6 +230,9 @@ def savedetails(request):
             temp = datetime.strptime(date,format)
             temp = temp.astimezone(pytz.UTC)
             open_till = temp
+            print("server time is",timezone.now())
+            print("open at",open_at)
+            print("open till",open_till)
             model.open_at = open_at
             model.open_till = open_till
         except:
