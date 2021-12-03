@@ -59,7 +59,7 @@ def RegisterUsertoCache(request):
         email = data.get("email")
         password = data.get("password")
         cpass = data.get("cpassword")
-        print(first_name,last_name,username,email,password,cpass,sep='\n')
+        # print(first_name,last_name,username,email,password,cpass,sep='\n')
         try:
             Fetch_cache(email)
             return JsonResponse({'status':400,'message':'Otp Already send please wait for 5 minutes for resend.'})
@@ -103,19 +103,19 @@ def loginuser(request):
             if str(otpuser).strip() != str(otp).strip():
                 return JsonResponse({'status':406,'message':'Invalid Otp'})
         except Exception as e:
-            print(e)
+            raise(e)
             return JsonResponse({'status':404,'message':'User Not Exist or session expired.'})
         try:
             user = User.objects.get(username=pdata.get("username"))
             if check_password(password,user.password):
                 login(request,user)
                 delete_pattern(pdata.get("username"))
-                print('yes done with backend.')
+                # print('yes done with backend.')
                 return JsonResponse({'status':200,'message':'success'})
             else:
                 return JsonResponse({'status':404,'message':'Invalid Username or Password.'})
         except Exception as e:
-            print(e)
+            raise(e)
             return JsonResponse({'status':404,'message':'User Not Exist or session expired.'})
 
     else:
@@ -127,7 +127,6 @@ def logusertocache(request):
         body = json.loads(request.body)
         username = body.get("username")
         password = body.get("password")
-        
         user = authenticate(username=username,password=password)
         if user!=None:
             try:
