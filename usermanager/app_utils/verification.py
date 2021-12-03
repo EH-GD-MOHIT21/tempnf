@@ -39,7 +39,7 @@ def GenerateSlug(length=None):
 
 
 def delete_pattern(email):
-    for key in cache._cache.keys():
+    for key,value in cache._cache.items():
         tk = key.split(':')[2]
         if tk == email:
             del cache._cache[key]
