@@ -7,6 +7,7 @@ from django.http import JsonResponse
 import json
 from datetime import datetime
 import pytz
+from django.conf import settings
 
 # Create your views here.
 
@@ -161,6 +162,7 @@ def commonAPIsetNewOpenCloseTime(request):
         try:
             open_at = body.get("open_at")
             open_till = body.get("close_at")
+            timezone = body.get("timezone")
         except:
             return JsonResponse({'status':400,'message':'Invalid Request.'})
 
@@ -172,7 +174,9 @@ def commonAPIsetNewOpenCloseTime(request):
                 date = f'{day}/{month}/{year} {hour}:{minute}:00'
                 format  = "%d/%m/%Y %H:%M:%S"
                 temp = datetime.strptime(date,format)
-                temp = temp.astimezone(pytz.UTC)
+                local = pytz.timezone(timezone)
+                local_dt = local.localize(temp, is_dst=None)
+                temp = local_dt.astimezone(pytz.UTC)
                 open_at = temp
                 date,time = open_till.split('T')
                 year,month,day = date.split('-')
@@ -180,7 +184,8 @@ def commonAPIsetNewOpenCloseTime(request):
                 date = f'{day}/{month}/{year} {hour}:{minute}:00'
                 format  = "%d/%m/%Y %H:%M:%S"
                 temp = datetime.strptime(date,format)
-                temp = temp.astimezone(pytz.UTC)
+                local_dt = local.localize(temp, is_dst=None)
+                temp = local_dt.astimezone(pytz.UTC)
                 open_till = temp
                 form.open_at = open_at
                 form.open_till = open_till
@@ -201,6 +206,7 @@ def commonAPIsetNewOpenCloseTime(request):
         try:
             open_at = body.get("open_at")
             open_till = body.get("close_at")
+            timezone = body.get("timezone")
         except:
             return JsonResponse({'status':400,'message':'Invalid Request.'})
         if open_at!='' and open_till!='':
@@ -211,7 +217,9 @@ def commonAPIsetNewOpenCloseTime(request):
                 date = f'{day}/{month}/{year} {hour}:{minute}:00'
                 format  = "%d/%m/%Y %H:%M:%S"
                 temp = datetime.strptime(date,format)
-                temp = temp.astimezone(pytz.UTC)
+                local = pytz.timezone(timezone)
+                local_dt = local.localize(temp, is_dst=None)
+                temp = local_dt.astimezone(pytz.UTC)
                 open_at = temp
                 date,time = open_till.split('T')
                 year,month,day = date.split('-')
@@ -219,7 +227,8 @@ def commonAPIsetNewOpenCloseTime(request):
                 date = f'{day}/{month}/{year} {hour}:{minute}:00'
                 format  = "%d/%m/%Y %H:%M:%S"
                 temp = datetime.strptime(date,format)
-                temp = temp.astimezone(pytz.UTC)
+                local_dt = local.localize(temp, is_dst=None)
+                temp = local_dt.astimezone(pytz.UTC)
                 open_till = temp
                 quiz.open_at = open_at
                 quiz.open_till = open_till
@@ -238,13 +247,13 @@ def RenderUpdateTime(request,form_id):
         form = formpublicdata.objects.get(token=form_id)
         if form.mail != request.user.email:
             return render(request,'confirm.html',{'message':'You have not sufficient permissions.'})
-        return render(request,'changetime.html',{"id":form_id,"is_quiz":False})
+        return render(request,'changetime.html',{"id":form_id,"is_quiz":False,"timezones":settings.TIMEZONES})
     except:
         try:
             quiz = QuizManager.objects.get(token=form_id)
             if quiz.mail != request.user.email:
                 return render(request,'confirm.html',{'message':'You have not sufficient permissions.'})
-            return render(request,'changetime.html',{"id":form_id,"is_quiz":True})
+            return render(request,'changetime.html',{"id":form_id,"is_quiz":True,'timezones':settings.TIMEZONES})
         except:
             return render(request,'confirm.html',{'message':'Quiz or form not exist with provided informations.'})
 

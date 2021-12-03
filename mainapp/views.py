@@ -10,6 +10,7 @@ from django.http import JsonResponse
 import json
 from django.utils import timezone
 import pytz
+from django.conf import settings
 
 # Create your views here.
 
@@ -38,7 +39,7 @@ def saveresponse(request,formid=None):
         if not (timezone.now() >= myformdata.open_at and timezone.now() <= myformdata.open_till):
             return render(request,'confirm.html',{'message':f'Server Time for fill the form is between {myformdata.open_at} and {myformdata.open_till}. Your Responses can not be save.'})
 
-    if not myformdata.accept_response:
+    elif not myformdata.accept_response:
         return render(request,'confirm.html',{'message':'This Form is no longer accepting response.'})
 
     name = request.POST['name']
@@ -164,7 +165,7 @@ def fillform(request,formid=None):
 
 def createform(request):
     if request.user.is_authenticated:
-        return render(request,'index.html')
+        return render(request,'index.html',{'timezones':settings.TIMEZONES})
     else:
         return redirect('/login')
 
@@ -204,6 +205,7 @@ def savedetails(request):
 
     open_at = request.POST['opentime']
     open_till = request.POST['closetime']
+    print(open_at)
 
     model = formpublicdata()
     model.token = personalcode
@@ -219,8 +221,11 @@ def savedetails(request):
             hour,minute = time.split(':')
             date = f'{day}/{month}/{year} {hour}:{minute}:00'
             format  = "%d/%m/%Y %H:%M:%S"
+            print(request.POST["timezone"])
+            local = pytz.timezone(request.POST["timezone"])
             temp = datetime.strptime(date,format)
-            temp = temp.astimezone(pytz.UTC)
+            local_dt = local.localize(temp, is_dst=None)
+            temp = local_dt.astimezone(pytz.UTC)
             open_at = temp
             date,time = open_till.split('T')
             year,month,day = date.split('-')
@@ -228,11 +233,14 @@ def savedetails(request):
             date = f'{day}/{month}/{year} {hour}:{minute}:00'
             format  = "%d/%m/%Y %H:%M:%S"
             temp = datetime.strptime(date,format)
-            temp = temp.astimezone(pytz.UTC)
+            local_dt = local.localize(temp, is_dst=None)
+            temp = local_dt.astimezone(pytz.UTC)
             open_till = temp
+            print(open_at)
+            print(open_till)
             model.open_at = open_at
             model.open_till = open_till
-        except:
+        except Exception as e:
             pass
     model.save()
 

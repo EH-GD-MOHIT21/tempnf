@@ -128,6 +128,11 @@
 
             <div class="hidden" style="display: none;" id="datesec">
                 Open time: <input type="datetime-local" name="opentime"> Close time: <input type="datetime-local" name="closetime">
+                <select name="timezone">
+                    {% for times in timezones %}
+                        <option value={{times}}>{{times}}</option>
+                    {% endfor %}
+                </select>
             </div>
 
         </div>

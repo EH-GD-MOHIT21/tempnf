@@ -14,6 +14,11 @@
             <h3 style="text-align:center;margin:0;margin-bottom:20px;">Nested Forms | Schedule Forms</h3>
             <input type="datetime-local" id="stm" style="display:block;margin:10px auto;width:90%;font-size:16px;cursor:pointer;">
             <input type="datetime-local" name="" id="etm" style="display:block;margin:10px auto;width:90%;font-size:16px;cursor:pointer;">
+            <select name="timezone" id="timezone">
+                {% for times in timezones %}
+                    <option value={{times}}>{{times}}</option>
+                {% endfor %}
+            </select>
             <button type="button" id="sbtm" style="display:block;cursor:pointer;margin:0px auto;margin-top:25px;padding:7px 10px;color:white;background:purple;font-size:15px;border:none;outline:none;border-radius:4px;border: 1px solid gray;">Proceed</button>
         </div>
     <div>
@@ -31,6 +36,7 @@
             body: JSON.stringify({
                 "open_at": document.getElementById("stm").value,
                 "close_at": document.getElementById("etm").value,
+                "timezone": document.getElementById("timezone").value,
                 {% if is_quiz %}
                 "quiz_id": "{{id}}"
                 {% else %}

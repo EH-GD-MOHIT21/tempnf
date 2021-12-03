@@ -30,3 +30,10 @@ in survey type forms add functionality to pie chart like graphs to show ui. --> 
 ----  to be fixed ----
 # something wrong with form survey and quiz reported not working properly.  -- fixed
 ---- to be fixed ----
+
+# manage change sheduling api -- important --done
+# change quiz time schedule also -- important --done
+
+delete api creator page js add one parentElemnet.remove to fix bug
+
+# add timezone option in quiz page also  --> done

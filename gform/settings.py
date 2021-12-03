@@ -173,3 +173,9 @@ VALID_CHARS = [chr(i) for i in range(65,91)]+[str(i) for i in range(0,10)]+[chr(
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+
+TIMEZONES = []
+
+with open(os.path.join(BASE_DIR,'gform/timezones.txt'),'r') as file:
+    for line in file:
+        TIMEZONES.append(line.strip('\n'))

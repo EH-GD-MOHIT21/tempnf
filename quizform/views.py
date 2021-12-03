@@ -6,12 +6,13 @@ import ast
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
 
 # Create your views here.
 
 def RenderCreateQuiz(request):
     if request.user.is_authenticated:
-        return render(request,'createquiz.html')
+        return render(request,'createquiz.html',{'timezones':settings.TIMEZONES})
     else:
         return redirect('/login')
 
@@ -53,7 +54,7 @@ def FillQuiz(request,quiz_id):
             if not (timezone.now() >= model.open_at and timezone.now() <= model.open_till):
                 return render(request,'confirm.html',{'message':f'Server Time for fill the quiz is between {model.open_at} and {model.open_till}'})
 
-        if not model.accept_response:
+        elif not model.accept_response:
             return render(request,'confirm.html',{'message':'This quiz is no longer accepting responses.'})
         mcqques = QuizMCQquestions.objects.filter(code=model)
         filltype = QuizFillTypeQuestions.objects.filter(code=model)
@@ -127,8 +128,6 @@ def SaveQuizResposnes(request,quiz_id):
         return redirect('/login')
     try:
         code = QuizManager.objects.get(token=quiz_id)
-        if not code.accept_response:
-            return render(request,'confirm.html',{'message':'This quiz is no longer accepting response.'})
     except:
         return render(request,'quiz_confirmation.html',{"message":"Quiz Not Found With Provided Token"})
 
@@ -136,6 +135,9 @@ def SaveQuizResposnes(request,quiz_id):
 
         if not (timezone.now() >= code.open_at and timezone.now() <= code.open_till):
             return render(request,'confirm.html',{'message':f'Server Time for fill the quiz is between {code.open_at} and {code.open_till}. Your Responses can not be save.'})
+    
+    elif not code.accept_response:
+            return render(request,'confirm.html',{'message':'This quiz is no longer accepting response.'})
 
     # fill type answers
     try:

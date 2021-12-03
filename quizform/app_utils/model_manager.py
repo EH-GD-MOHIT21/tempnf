@@ -39,8 +39,11 @@ def QuizManagerObjectCreator(request):
             hour,minute = time.split(':')
             date = f'{day}/{month}/{year} {hour}:{minute}:00'
             format  = "%d/%m/%Y %H:%M:%S"
+            print(request.POST["timezone"])
+            local = pytz.timezone(request.POST["timezone"])
             temp = datetime.strptime(date,format)
-            temp = temp.astimezone(pytz.UTC)
+            local_dt = local.localize(temp, is_dst=None)
+            temp = local_dt.astimezone(pytz.UTC)
             open_at = temp
             date,time = open_till.split('T')
             year,month,day = date.split('-')
@@ -48,8 +51,10 @@ def QuizManagerObjectCreator(request):
             date = f'{day}/{month}/{year} {hour}:{minute}:00'
             format  = "%d/%m/%Y %H:%M:%S"
             temp = datetime.strptime(date,format)
-            temp = temp.astimezone(pytz.UTC)
+            local_dt = local.localize(temp, is_dst=None)
+            temp = local_dt.astimezone(pytz.UTC)
             open_till = temp
+            print(open_at,open_till)
             model.open_at = open_at
             model.open_till = open_till
         except:
