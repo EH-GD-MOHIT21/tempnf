@@ -102,7 +102,8 @@ def loginuser(request):
             otp = data["otp"]
             if str(otpuser).strip() != str(otp).strip():
                 return JsonResponse({'status':406,'message':'Invalid Otp'})
-        except:
+        except Exception as e:
+            print(e)
             return JsonResponse({'status':404,'message':'User Not Exist or session expired.'})
         try:
             user = User.objects.get(username=pdata.get("username"))
@@ -113,7 +114,8 @@ def loginuser(request):
                 return JsonResponse({'status':200,'message':'success'})
             else:
                 return JsonResponse({'status':404,'message':'Invalid Username or Password.'})
-        except:
+        except Exception as e:
+            print(e)
             return JsonResponse({'status':404,'message':'User Not Exist or session expired.'})
 
     else:
