@@ -15,6 +15,7 @@ import pytz
 
 
 def home(request):
+    print("server time is: ",timezone.now())
     return render(request,'home.html')
 
 
@@ -118,8 +119,8 @@ def fillform(request,formid=None):
     except:
         return render(request,'confirm.html',{'message':"Required Form Not Exists"})
 
-    if not myformdata.accept_response:
-        return render(request,'confirm.html',{'message':'This Form is no longer accepting response.'})
+    # if not myformdata.accept_response:
+    #     return render(request,'confirm.html',{'message':'This Form is no longer accepting response.'})
 
 
     if myformdata.open_at != None and myformdata.open_till != None:
