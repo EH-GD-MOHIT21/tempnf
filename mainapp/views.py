@@ -205,6 +205,10 @@ def savedetails(request):
     open_at = request.POST['opentime']
     open_till = request.POST['closetime']
 
+    print("html values")
+    print(open_at)
+    print(open_till)
+
     model = formpublicdata()
     model.token = personalcode
     model.title = title
