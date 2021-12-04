@@ -83,7 +83,6 @@ def RegisterUsertoCache(request):
         otp = GenerateOTP()
         set_cache({"first_name":first_name,"last_name":last_name,"email":email,"password":password},otp)
         value = send_mail(to=email,subject="Welcome User to Nested Forms.",message=f"Your otp is {otp} valid for 5 minutes. Thanks\n\nRegards NestedForms.\nHappy Form Creating.")
-
         if value:
             return JsonResponse({'status':200,'message':'otp send.'})
         else:
@@ -123,6 +122,7 @@ def loginuser(request):
 
 @csrf_exempt
 def logusertocache(request):
+    print("before setting",cache._cache.keys())
     if request.method == 'POST' and not request.user.is_authenticated:
         body = json.loads(request.body)
         username = body.get("username")
@@ -140,6 +140,7 @@ def logusertocache(request):
                 pass
             otp = GenerateOTP()
             cache.set(username,{"password":password,"otp":otp},timeout=300)
+            print("after setting",cache._cache.keys())
             value = send_mail(to=username,subject="Welcome User to Nested Forms.",message=f"Your otp is {otp} valid for 5 minutes. Thanks\n\nRegards NestedForms.\nHappy Form Creating.")
             
             if value:
@@ -159,6 +160,7 @@ def verifyRegisterUser(request):
         body = json.loads(request.body)
         email = body.get("email")
         otp = body.get("otp")
+        print("before deleting: ",cache._cache.keys())
         try:
             data = Fetch_cache(email)
             if str(otp).strip() == str(data["otp"]).strip():
@@ -170,10 +172,13 @@ def verifyRegisterUser(request):
                 user.set_password(data["password"])
                 user.save()
                 delete_pattern(email)
+                print("after deleting",cache._cache.keys())
                 return JsonResponse({'status':200,'message':'success'})
             else:
                 return JsonResponse({'status':406,'message':'Invalid otp.'})
-        except:
+        except Exception as e:
+            print(e)
+            print("after deleting",cache._cache.keys())
             return JsonResponse({'status':403,'message':'Session Expired For User Please Try Again.'})
     else:
         return JsonResponse({'status':400,'message':'Invalid Request.'})
