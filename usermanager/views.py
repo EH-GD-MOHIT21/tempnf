@@ -92,6 +92,7 @@ def RegisterUsertoCache(request):
 
 @csrf_exempt
 def loginuser(request):
+    print("query cache otp match: ",cache._cache.keys())
     if request.method == "POST" and not request.user.is_authenticated:
         try:
             pdata = json.loads(request.body)
