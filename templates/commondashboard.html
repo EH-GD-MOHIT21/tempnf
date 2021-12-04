@@ -55,6 +55,21 @@
         .child1 ::-webkit-scrollbar-thumb:hover {
             background: #88ba1c;
             }
+
+        @media(max-width:750px){
+            .container,.child1{
+                width: 98%;
+            }
+        }
+        @media(max-width:350px){
+            .cccontainer{
+                flex-direction: column;
+            }
+            .cccontainer a{
+                margin: 5px auto;
+            }
+
+        }
     </style>
 </head>
 
@@ -76,7 +91,7 @@
                 <div class="formdetails" style="margin: 20px auto;">
                     <h3 style="text-align: center;word-wrap: break-word;">{{name}}</h3>
                     <p style="text-align: right;word-wrap: break-word;">Created on: {{date}}</p>
-                    <div style="display: flex;justify-content: space-around;align-items: center;margin: 10px auto;">
+                    <div class="cccontainer" style="display: flex;justify-content: space-around;align-items: center;margin: 10px auto;">
                         <a href="/updatetime/{{id}}">Change Scheduling</a>
                         <a href="/survey/{{id}}">Survey</a>
                     </div>
@@ -93,7 +108,7 @@
                 <div class="formdetails" style="margin: 20px auto;">
                     <h3 style="text-align: center;word-wrap: break-word;">{{name}}</h3>
                     <p style="text-align: right;word-wrap: break-word;">Created on: {{date}}</p>
-                    <div style="display: flex;justify-content: space-around;align-items: center;margin: 10px auto;">
+                    <div class="cccontainer" style="display: flex;justify-content: space-around;align-items: center;margin: 10px auto;">
                         <a href="/updatetime/{{id}}">Change Scheduling</a>
                         <a href="/surveyform/{{id}}">Survey</a>
                     </div>

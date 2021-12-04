@@ -9,6 +9,9 @@
     <title>Manage Quizes @ NestedForm</title>
     <link rel="stylesheet" href="{% static 'creator.css' %}">
     <style>
+        h3{
+            flex:0.5;
+        }
         button {
             padding: 6px 10px;
             color: white;
@@ -22,6 +25,13 @@
         li:hover {
             text-decoration: underline;
             color: crimson;
+        }
+
+        .surdelbtns {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex: 0.9;
         }
         
         .switch {
@@ -85,6 +95,44 @@
         .slider.round:before {
             border-radius: 50%;
         }
+        .wrapperdivspar{
+            display: flex;
+            align-items: center;
+            flex: 3;
+            justify-content: space-evenly;
+        }
+        @media(max-width:650px){
+            .container,.child1{
+                width: 98%;
+            }
+            .pdiv {
+                flex-direction: column;
+            }
+            .pdiv button,.pdiv a,.pdiv div{
+                margin: 5px 0;
+            }
+            .wrapperdivspar {
+                justify-content: space-between;
+                width: 100%;
+            }
+        }
+        @media(max-width:450px){
+            .btns-cntr{
+                flex-direction: column;
+            }
+            .btns-cntr h3,.btns-cntr button{
+                margin: 5px auto;
+            }
+            .wrapperdivspar{
+                flex-direction: column;
+            }
+            h3{
+                flex:1;
+            }
+            .surdelbtns{
+                width: 100%;
+            }
+        }
     </style>
 </head>
 
@@ -94,9 +142,10 @@
         <div class="child1">
             <div class="constpart">
                 <p>Quiz Id: {{id}}</p>
-                <div class="wrappertoggle" style="display: flex;justify-content: space-between;align-items: center;margin: 20px auto;">
+                <div class="wrappertoggle pdiv" style="display: flex;justify-content: space-between;align-items: center;margin: 20px auto;">
 
-                    <button style="background:green;text-align:center;" type="button" onclick="createcsv('{{id}}')">Create Csv</button>
+                    <button style="background:green;text-align:center;flex:0.5;" type="button" onclick="createcsv('{{id}}')">Create Csv</button>
+                    <div class="wrapperdivspar">
                     <div class="wrapperstch">
                         Show Responses:
                         <label class="switch">
@@ -121,17 +170,20 @@
                     {% else %}
                     <a href="/updatetime/{{id}}">Change Schedule</a>
                     {% endif %}
+                    </div>
                 </div>
                 {% if isres %}
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-                        <h4>Open at: {{oa}}</h4>
-                        <h4>Open till: {{ot}}</h4>
+                        <h4 style="margin-right:8px;">Open at: {{oa}}</h4>
+                        <h4 style="margin-left:8px;">Open till: {{ot}}</h4>
                     </div>
                 {% endif %}
-                <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div class="btns-cntr" style="display:flex;justify-content:space-between;align-items:center;margin:10px auto;">
                     <h3>Responses: <span id="tr-{{forloop.counter0}}">{{res}}</span></h3>
+                    <div class="surdelbtns">
                     <button onclick="window.location.href='/survey/{{id}}'" style="background:purple;position:relative;padding: 6px 18px;">Survey<span style="position: absolute;top: 0;display: block;right: 0;font-size: 9px;">Beta</span></button>
                     <button type="button" onclick="mohitfuncdel('{{id}}',this);">Delete Quiz</button>
+                    </div>
                 </div>
             </div>
             <div class="wrapperconstpart" style="overflow-x: auto;max-height:120px;">
@@ -172,7 +224,7 @@
             let json = await response.json();
             let message = json["message"]
             if (message == "success") {
-                btn.parentElement.parentElement.parentElement.remove()
+                btn.parentElement.parentElement.parentElement.parentElement.remove()
                     //qtotalearned
             }
             alert(message);

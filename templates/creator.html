@@ -190,10 +190,10 @@
             {% endif %}
 
             <div class="btns-cntr" style="display:flex;justify-content:space-between;align-items:center;margin:10px auto;">
-                <h3>Responses: <span id="tr-{{forloop.counter0}}">{{res}}</spna></h3>
+                <h3>Responses: <span id="tr-{{forloop.counter0}}">{{res}}</span></h3>
                     <div class="surdelbtns">
                 <button type="button" style="background:purple;" onclick="window.location.href='/surveyform/{{id}}'">Survey</button>
-                <button type="button" onclick="mohitfuncdel('{{id}}',this);">Delete Quiz</button>
+                <button type="button" onclick="mohitfuncdel('{{id}}',this);">Delete Form</button>
 
                     </div>
             </div>
@@ -260,7 +260,7 @@
             let json = await response.json();
             let message = json["message"]
             if (message == "success") {
-                btn.parentElement.parentElement.remove()
+                btn.parentElement.parentElement.parentElement.remove()
                     //qtotalearned
             }
             alert(message);

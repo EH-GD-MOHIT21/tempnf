@@ -112,7 +112,11 @@
                 Open time: <input type="datetime-local" name="opentime"> Close time: <input type="datetime-local" name="closetime">
                 <select name="timezone">
                     {% for times in timezones %}
+                        {%if times == "Asia/Kolkata" %}
+                        <option selected value={{times}}>{{times}}</option>
+                        {% else %}
                         <option value={{times}}>{{times}}</option>
+                        {% endif %}
                     {% endfor %}
                 </select>
             </div>
