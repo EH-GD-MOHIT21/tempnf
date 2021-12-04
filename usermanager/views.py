@@ -103,7 +103,7 @@ def loginuser(request):
             if str(otpuser).strip() != str(otp).strip():
                 return JsonResponse({'status':406,'message':'Invalid Otp'})
         except Exception as e:
-            print(e)
+            print("Exception is ",e)
             return JsonResponse({'status':404,'message':'User Not Exist or session expired.'})
         try:
             user = User.objects.get(username=pdata.get("username"))
@@ -132,8 +132,11 @@ def logusertocache(request):
             try:
                 Fetch_cache(username)
                 return JsonResponse({'status':406,'message':'otp send please try after 5 minutes.'})
+            except ValueError:
+                pass
             except Exception as e:
-                print(e)
+                raise(e)
+                print("Exception is: ",e)
                 pass
             otp = GenerateOTP()
             cache.set(username,{"password":password,"otp":otp},timeout=300)
