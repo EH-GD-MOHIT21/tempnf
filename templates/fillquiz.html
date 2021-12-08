@@ -36,18 +36,19 @@
         <p style="text-align:right;">Marks: <span style="font-weight: 700;">{{upper.total_marks}}</span></p>
         {% if opentill %}
         <p style="text-align:center;">Time Remaining: <span id="changabletime">{{opentill}}</span></p>
+        <p>Auto submit before 30 sec: <input type="checkbox" id="autosbmitcheck"></p>
         {% endif %}
     </div>
 
 
-    <form method="POST" id="quizmainform" action="/savequiz/{{formid}}">
+    <form method="POST" id="quizmainform" name="mainform" action="/savequiz/{{formid}}">
         {% csrf_token %}
         <div class="parentelement">
             <div class="container inputcontainer">
-                <input type="text" name="name" required placeholder="Enter Your Full Name">
+                <input id="nre" type="text" name="name" required placeholder="Enter Your Full Name">
                 <input type="text" name="mail" required placeholder="Enter Your email address" value={{user.email}} disabled>
-                <input type="text" name="phone" required placeholder="Enter Your Phone Number">
-                <input type="text" name="address" required placeholder="Enter Your Full Address">
+                <input id="pre" type="text" name="phone" required placeholder="Enter Your Phone Number">
+                <input id="are" type="text" name="address" required placeholder="Enter Your Full Address">
             </div>
         </div>
 
@@ -123,33 +124,43 @@
 </body>
 
 {% if opentill %}
-    <script>
-        id = setInterval(dothistask, 1000);
-        function dothistask() {
+<script>
+    id = setInterval(dothistask, 1000);
+
+    function dothistask() {
         value = document.getElementById('changabletime').textContent;
         if (value.indexOf(':') == -1) {
             seconds = parseInt(document.getElementById('changabletime').textContent);
             seconds -= 1;
-            minutes = Math.floor(seconds/60);
+            minutes = Math.floor(seconds / 60);
             seconds = seconds - minutes * 60;
-            console.log(minutes,seconds)
             document.getElementById('changabletime').textContent = minutes + ':' + seconds;
-        }else{
+        } else {
             arr = document.getElementById('changabletime').textContent.split(':')
             minute = parseInt(arr[0]);
             second = parseInt(arr[1]);
-            if(second==0 && minute != 0){
+            if (second == 0 && minute != 0) {
                 second = 59;
                 minute -= 1;
-            }else if(second==0 && minute ==0){
+            } else if (second == 0 && minute == 0) {
                 clearInterval(id);
-            }else if(second!=0){
+            } else if (second != 0) {
                 second = second -= 1;
             }
-            document.getElementById('changabletime').textContent = minute+':'+second;
+            document.getElementById('changabletime').textContent = minute + ':' + second;
+            if (document.getElementById("autosbmitcheck").checked && minute == 0 && second < 30) {
+                if (document.getElementById("nre").value == '' || document.getElementById("pre").value == '' || document.getElementById("are").value == '') {
+                    document.getElementById("autosbmitcheck").checked = false;
+                    alert("please fill required details.")
+                } else {
+                    // submit form here
+                    document.mainform.submit();
+                    clearInterval(id);
+                }
+            }
         }
     }
-    </script>
+</script>
 {% endif %}
 
 <script>
@@ -171,6 +182,13 @@
             document.getElementById("i" + id).value = "";
 
     }
+
+    document.getElementById("autosbmitcheck").addEventListener('change', function() {
+        if (document.getElementById("nre").value == '' || document.getElementById("pre").value == '' || document.getElementById("are").value == '') {
+            this.checked = false;
+            alert("please fill required details.")
+        }
+    })
 </script>
 
 </html>

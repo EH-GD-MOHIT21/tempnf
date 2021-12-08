@@ -4,6 +4,7 @@ log = "Nothing to show."
 
 async function mohit() {
     document.getElementById("spinner").style.display = "inline-block";
+    document.getElementById("logbtn").disabled = true;
     let response = await fetch('/login/setcache', {
         credentials: 'include',
         method: 'POST',
@@ -18,11 +19,12 @@ async function mohit() {
         })
     })
     if (response.ok) {
+        document.getElementById("logbtn").disabled = false;
         document.getElementById('spinner').style.display = 'none';
         let json = await response.json();
         let message = json["message"]
         log = message;
-        if (message == 'otp send.') {
+        if (message == 'otp send.' || message == "otp send please try after 5 minutes.") {
             document.getElementById("verifier").style.background = "green";
             document.getElementById("otp").style.display = "block";
             document.getElementById("keyico").style.display = "block";
@@ -31,6 +33,7 @@ async function mohit() {
             } catch (err) {}
             document.getElementById('logbtn').id = "logbtnsbmit";
             document.getElementById('logbtnsbmit').addEventListener('click', async function() {
+                document.getElementById("logbtnsbmit").disabled = true;
                 document.getElementById("spinner").style.display = "inline-block";
                 let response = await fetch('/login/verify', {
                     credentials: 'include',
@@ -47,6 +50,7 @@ async function mohit() {
                     })
                 })
                 if (response.ok) {
+                    document.getElementById("logbtnsbmit").disabled = false;
                     document.getElementById('spinner').style.display = 'none';
                     let json = await response.json();
                     let message = json["message"]
@@ -58,6 +62,7 @@ async function mohit() {
                     }
 
                 } else {
+                    document.getElementById("logbtnsbmit").disabled = false;
                     document.getElementById('spinner').style.display = 'none';
                     alert("HTTP-Error: " + response.status);
                 }
@@ -67,6 +72,7 @@ async function mohit() {
         }
 
     } else {
+        document.getElementById("logbtn").disabled = false;
         document.getElementById('spinner').style.display = 'none';
         alert("HTTP-Error: " + response.status);
     }

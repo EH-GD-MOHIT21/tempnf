@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'quizform',
     'dataanal',
     'surveys',
+    'nfutils',
 ]
 
 MIDDLEWARE = [
@@ -175,6 +176,13 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 
 TIMEZONES = []
+
+EMAIL_HOST_USER = EMAIL_SENDER
+EMAIL_HOST_PASSWORD = PASS_SENDER
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = EMAIL_SENDER
+EMAIL_USE_TLS = True
 
 with open(os.path.join(BASE_DIR,'gform/timezones.txt'),'r') as file:
     for line in file:

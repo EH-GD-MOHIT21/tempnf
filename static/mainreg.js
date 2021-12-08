@@ -1,4 +1,5 @@
-document.getElementById('signbtn').addEventListener('click', mohit)
+document.getElementById('signbtn').addEventListener('click', mohit);
+log = "Nothing to show."
 
 
 async function mohit() {
@@ -26,7 +27,8 @@ async function mohit() {
         document.getElementById('spinner').style.display = 'none';
         // document.getElementById("verifier").style.display = 'block';
         let json = await response.json();
-        let message = json["message"]
+        let message = json["message"];
+        log = message;
         if (message == 'otp send.' || message == "Otp Already send please wait for 5 minutes for resend.") {
             document.getElementById("otp").style.display = "block";
             try {
@@ -52,11 +54,14 @@ async function mohit() {
                 if (response.ok) {
                     document.getElementById('spinner').style.display = 'none';
                     document.getElementById("signbtnsbmit").disabled = false;
-                    // document.getElementById("verifier").style.display = 'block';
+                    document.getElementById("verifier").style.background = "green";
                     let json = await response.json();
                     let message = json["message"]
+                    log = message;
                     if (message == 'success') {
                         window.location.replace('/')
+                    } else {
+                        document.getElementById("verifier").style.background = "crimson";
                     }
 
                 } else {
@@ -65,6 +70,8 @@ async function mohit() {
                     alert("HTTP-Error: " + response.status);
                 }
             })
+        } else {
+            document.getElementById("verifier").style.background = "crimson";
         }
 
     } else {
@@ -74,3 +81,7 @@ async function mohit() {
 
     }
 }
+
+document.getElementById("verifier").addEventListener("click", function() {
+    alert(log);
+})

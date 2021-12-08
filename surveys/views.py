@@ -90,8 +90,13 @@ def RenderSurveyForForm(request,form_id):
 
     
     final_data_Set = [[0,0,0,0] for i in range(len(mcqqus))]
+    ftpans = [["" for i in rcode] for j in ftpqus]
     responses = [0 for i in mcqqus]
-    for codes in rcode:
+    for tcodei,codes in enumerate(rcode):
+        # ftpqus
+        ftpres = formFillTypeResponse.objects.filter(code=codes)
+        for indext,res in enumerate(ftpres):
+            ftpans[indext][tcodei] = (res.answer)
         quizmodel = formMCQTypeResponse.objects.filter(code=codes)
         cntr = 0
         for tindex,model in enumerate(quizmodel):
@@ -135,7 +140,10 @@ def RenderSurveyForForm(request,form_id):
     
     # add ftp support here
     
-    return render(request,'nf_survey.html',{'data':zip(render_this,mcqqus,normal_list,responses),'additional':True})
+    print(ftpqus)
+    print(ftpans)
+    
+    return render(request,'nf_survey.html',{'data':zip(render_this,mcqqus,normal_list,responses),'additional':True,'ftpqus':ftpqus,'ftpans':ftpans})
 
 
 @csrf_exempt

@@ -1,26 +1,3 @@
-const mainMenu = document.querySelector('.mainMenu');
-const closeMenu = document.querySelector('.closeMenu');
-const openMenu = document.querySelector('.openMenu');
-
-
-
-
-openMenu.addEventListener('click', show);
-closeMenu.addEventListener('click', close);
-
-function show() {
-    mainMenu.style.display = 'flex';
-    mainMenu.style.top = '0';
-    document.querySelector('.openMenu').style.display = 'none';
-    document.querySelector('.mainbody').style.display = 'none';
-}
-
-function close() {
-    mainMenu.style.top = '-125%';
-    document.querySelector('.openMenu').style.display = 'block';
-    document.querySelector('.mainbody').style.display = 'flex';
-}
-
 function readyfunc() {
     clearInterval(id);
     var typed = new Typed("#typing1", {
@@ -40,3 +17,6 @@ function readyfunc() {
 }
 
 id = setInterval(readyfunc, 100);
+
+
+// document.querySelector('.mainbody').style.display = 'none';

@@ -27,4 +27,5 @@ urlpatterns = [
     url(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}),
     path('',include('dataanal.urls')),
     path('',include('surveys.urls')),
+    path('',include('nfutils.urls')),
 ]

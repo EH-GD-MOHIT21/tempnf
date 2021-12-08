@@ -187,8 +187,12 @@ def SaveQuizResposnes(request,quiz_id):
             for value in option:
                 if value in real_ans and value != '':
                     mark += (marks[j]/len(real_ans))
+                elif value != '' and value not in real_ans:
+                    # mark -= (marks[j]/3)
+                    mark = 0
+                    break
 
-            mcqtype.final_marks = mark
+            mcqtype.final_marks = max(0,mark)
             mcqtype.save()
             j+=1
         except Exception as e:
