@@ -17,6 +17,7 @@ class QuizManager(models.Model):
     open_at = models.DateTimeField(null=True,blank=True)
     # time on which quiz has to be close
     open_till = models.DateTimeField(null=True,blank=True)
+    negative_marking_scheme = models.FloatField(null=True,blank=True)
 
     def __str__(self):
         return "QuizId: "+self.token

@@ -19,6 +19,9 @@ from django.conf.urls import url
 from django.views.static import serve
 from django.conf import settings
 
+handler404 = 'mainapp.views.handler_404'
+handler500 = 'mainapp.views.handler_500'
+
 urlpatterns = [
     path('blob/nestedforms/developer/adminpanel', admin.site.urls),
     path('',include('mainapp.urls')),

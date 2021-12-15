@@ -128,6 +128,7 @@ def SaveQuizResposnes(request,quiz_id):
         return redirect('/login')
     try:
         code = QuizManager.objects.get(token=quiz_id)
+        neg_markinng = code.negative_marking_scheme
     except:
         return render(request,'quiz_confirmation.html',{"message":"Quiz Not Found With Provided Token"})
 
@@ -184,15 +185,22 @@ def SaveQuizResposnes(request,quiz_id):
             real_ans = ast.literal_eval(QuizMCQAnswers.objects.filter(code=code)[j].answers)
             mark = 0
             print(option,real_ans)
-            for value in option:
-                if value in real_ans and value != '':
-                    mark += (marks[j]/len(real_ans))
-                elif value != '' and value not in real_ans:
-                    # mark -= (marks[j]/3)
-                    mark = 0
-                    break
-
-            mcqtype.final_marks = max(0,mark)
+            if neg_markinng == None or neg_markinng == '':
+                for value in option:
+                    if value in real_ans and value != '':
+                        mark += (marks[j]/len(real_ans))
+                    elif value != '' and value not in real_ans:
+                        # mark -= (marks[j]/3)
+                        mark = 0
+                        break
+                mcqtype.final_marks = max(0,mark)
+            else:
+                for value in option:
+                    if value in real_ans and value != '':
+                        mark += (marks[j]/len(real_ans))
+                    elif value != '' and value not in real_ans:
+                        mark -= (marks[j]*neg_markinng)
+                mcqtype.final_marks = mark
             mcqtype.save()
             j+=1
         except Exception as e:

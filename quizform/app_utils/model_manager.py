@@ -32,6 +32,9 @@ def QuizManagerObjectCreator(request):
     model.set_time
     open_at = request.POST['opentime']
     open_till = request.POST['closetime']
+    marking_scheme = request.POST["negmarkvalue"]
+    if(eval(marking_scheme)>0):
+        model.negative_marking_scheme = eval(marking_scheme)
     if open_at!='' and open_till!='':
         try:
             date,time = open_at.split('T')

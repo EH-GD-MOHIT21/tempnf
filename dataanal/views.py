@@ -58,3 +58,7 @@ def Create_Csv_User_Marks_Api(request):
     create_csv_base_data(users,final_marks_set,emails,quiz_id,total_marks)
     filepath =  "/media/" + quiz_id+".xlsx"
     return JsonResponse({'status':200,'message':'success','path':filepath})
+
+
+def throw_server_error(request):
+    raise ValueError("Server Error raised url hitted.")

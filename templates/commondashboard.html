@@ -35,6 +35,8 @@
             border: 1px solid black;
             padding: 5px;
             border-radius: 5px;
+            {% comment %} background: rgba(0,0,0,0.1); {% endcomment %}
+            box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
         }
         .formdetails p{
             margin-top: 7px;
@@ -74,9 +76,9 @@
 </head>
 
 <body>
-    <h2 style="text-align: center;margin-top:30px;">Dashboard | <a href="/" style="color:black;">NestedForms.com</a></h2>
+    <h2 style="text-align: center;position: fixed;margin: 0 !important;top: 25px;left: 50%;transform: translate(-50%, -50%);background: #d1c4e9;width: 100%;padding: 18px 0;">Dashboard | <a href="/" style="color:black;">NestedForms.com</a></h2>
     <div class="container">
-        <div class="child1">
+        <div class="child1" style="margin-top:40px !important;">
             <p style="font-size:20px;text-align:center;">Hey 👋 <strong>{{user.first_name}} {{user.last_name}}</strong></p>
             <p style="text-align:right;margin:5px auto;">Total Forms: {{lenform}}</p>
             <p style="text-align:right;margin:5px auto;">Total Quizzes: {{lenquiz}}</p>
@@ -85,7 +87,7 @@
     <div class="parentcontainer">
         <div class="container">
             <div class="child1">
-                <a href="/managequizes" style="text-align: center;display: block;margin-bottom:20px;margin-top:10px;" target="_blank">To Manage Quizzes Click Here</a> 
+                <a href="/managequizes" style="text-align: center;display: block;margin-bottom:20px;margin-top:10px;font-weight: 900;" target="_blank">To Manage Quizzes Click Here</a> 
                 <div class="formdetailscontainer">
                 {% for id,name,date in quizdata %}
                 <div class="formdetails" style="margin: 20px auto;">
@@ -102,7 +104,7 @@
         </div>
         <div class="container">
             <div class="child1">
-                <a href="/manageforms" target="_blank" style="display: block;text-align: center;margin-bottom:20px;margin-top:10px;">To Manage Forms Click Here</a> 
+                <a href="/manageforms" target="_blank" style="display: block;text-align: center;margin-bottom:20px;margin-top:10px;font-weight: 900;">To Manage Forms Click Here</a> 
                 <div class="formdetailscontainer">
                 {% for id,name,date in formdata %}
                 <div class="formdetails" style="margin: 20px auto;">
@@ -120,6 +122,7 @@
     </div>
     <footer style="text-align: center;margin: 10px auto;">
         {{user.email}} is recorded while creating forms/quizzes.
+        <p>All time mentioned above are in form of UTC(+00:00)</p>
     </footer>
 </body>
 

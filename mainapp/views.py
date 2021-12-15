@@ -513,3 +513,24 @@ def set_form_acpres_Api(request):
         return JsonResponse({'status':200,'message':'success'})
     except:
         return JsonResponse({'status':404,'message':'Invalid form Id.'})
+
+
+
+def handler_404(request, exception=None):
+    '''
+        view to handle 404 error
+        attached in project level
+        urls.py (gform.urls)
+    '''
+    data = {}
+    return render(request,'404error.html', data)
+
+
+def handler_500(request,  exception=None):
+    '''
+        view to handle 500 error
+        attached in project level
+        urls.py (gform.urls)
+    '''
+    data = {}
+    return render(request,'500error.html', data)

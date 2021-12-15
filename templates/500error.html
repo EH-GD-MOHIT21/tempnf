@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestedForms - 500 Interneal Server Error</title>
+</head>
+
+<body style="display: flex;justify-content: center;align-items: center;min-height: 100vh;background: whitesmoke">
+    <div style="text-align: center;background: #d1c4e9;border:1px solid black;border-top: 10px solid #00bcd4;border-radius: 10px;max-width:614px;">
+        <h1>Nested Forms</h1>
+        <img src="{% static 'formimgs/d1.png' %}">
+        <h4>Something went wrong please try again after some time.</h4>
+        <h4><a href="/">Go to home</a></h4>
+    </div>
+</body>
+<style>
+    @media(max-width:650px) {
+        img {
+            width: calc(100% - 2px);
+        }
+    }
+</style>
+
+</html>

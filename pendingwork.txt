@@ -6,7 +6,7 @@ to be updated
 
 match user response with exact responses  --> done
 Generate spreadsheet according to user names and marks  --> done
-Generate spreadsheet according to questions and responses
+Generate spreadsheet according to questions and responses --> only for forms
 
 
 if possible
@@ -34,6 +34,8 @@ in survey type forms add functionality to pie chart like graphs to show ui. --> 
 # manage change sheduling api -- important --done
 # change quiz time schedule also -- important --done
 
-delete api creator page js add one parentElemnet.remove to fix bug
+delete api creator page js add one parentElemnet.remove to fix bug --> done
 
 # add timezone option in quiz page also  --> done
+
+# focus -> fix navbar of home + typed js string media query. --> done
