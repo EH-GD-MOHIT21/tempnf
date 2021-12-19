@@ -18,4 +18,6 @@ urlpatterns = [
     path('deleteform',views.delete_form_api),
     path('delformresponse',views.delete_form_response_api),
     path('setacpformrespapi',views.set_form_acpres_Api),
+    path('manageformresponses/<form_id>',views.ExpendResponseForm),
+    path('getresform/<form_id>',views.SendFormResData),
 ]

@@ -1,5 +1,6 @@
 from django.db.models import base
 from django.shortcuts import redirect, render
+from django.views.decorators import csrf
 from .app_utils.model_manager import *
 from .models import *
 import ast
@@ -221,9 +222,11 @@ def ManageQuizes(request):
     is_sch = []
     open_at = []
     open_till = []
+    dates = []
     for quiz in all_quizes:
         quizzes_codes.append(quiz.token)
         permissions.append(quiz.show_response)
+        dates.append(quiz.date)
         if type(quiz.open_at)==type(timezone.now()) and type(quiz.open_till)==type(timezone.now()):
             if timezone.now() >= quiz.open_at and timezone.now() <= quiz.open_till:
                 accepting.append(True)
@@ -250,7 +253,7 @@ def ManageQuizes(request):
             temp.append(dat.email)
         responses.append(temp)
         total_res.append(len(data))
-    data = zip(quizzes_codes,total_res,permissions,accepting,is_sch,open_at,open_till)
+    data = zip(quizzes_codes,total_res,permissions,accepting,is_sch,open_at,open_till,dates)
 
     for quiz in quizzes_codes:
         return render(request,'managequizes.html',{'data':data,'mail':request.user.username,'resdata':responses})
@@ -473,3 +476,81 @@ def set_accepting_respquiz_api(request):
         return JsonResponse({'status':200,'message':'success'})
     except:
         return JsonResponse({'status':404,'message':'Invalid Quiz Id.'})
+
+
+def ExpendResponseQuiz(request,quiz_id):
+    try:
+        quiz = QuizManager.objects.get(token=quiz_id)
+        if not request.user.is_authenticated or quiz.mail != request.user.email:
+            return redirect('/login')
+        return render(request,'manage_responses.html',{'is_quiz':True})
+    except:
+        return render(request,'confirm.html',{'message':'Quiz Not Exists.'})
+
+
+@csrf_exempt
+def SendQuizResData(request,quiz_id):
+    
+    if not request.method == "POST" or not request.user.is_authenticated:
+        return JsonResponse({'status':406,'message':'Invalid Request','data':None})
+
+    try:
+        body = json.loads(request.body)
+        filters = body.get("filters")
+    except:
+        pass
+
+    try:
+        quiz = QuizManager.objects.get(token=quiz_id)
+        title = quiz.title
+        creator = quiz.creator.first_name + " " +quiz.creator.last_name
+        desc = quiz.desc
+        date = quiz.date
+        if quiz.mail != request.user.email:
+            return JsonResponse({'status':403,'message':'You need permissions','data':None})
+        if filters == None:
+            resp = base_submitted_form_data.objects.filter(token=quiz_id)
+        else:
+            if filters == "Time":
+                resp = base_submitted_form_data.objects.filter(token=quiz_id)
+            elif filters == "Name":
+                resp = base_submitted_form_data.objects.filter(token=quiz_id).order_by("name")
+            elif filters == "Phone":
+                resp = base_submitted_form_data.objects.filter(token=quiz_id).order_by("phone_no")
+            elif filters == "Email":
+                resp = base_submitted_form_data.objects.filter(token=quiz_id).order_by("email")
+            elif filters == "Address":
+                resp = base_submitted_form_data.objects.filter(token=quiz_id).order_by("address")
+    except:
+        return JsonResponse({'status':404,'message':'quiz not exists','data':None})
+    
+    if not len(resp):
+        return JsonResponse({'status':200,'message':'success','data':None,'extdata':{
+        "title": title,
+        "creator": creator,
+        "date": date,
+        "desc": desc
+    }
+    })
+    names = []
+    emails = []
+    phone_no = []
+    address = []
+    for res in resp:
+        names.append(res.name)
+        emails.append(res.email)
+        phone_no.append(res.phone_no)
+        address.append(res.address)
+    data = {
+        "names":names,
+        "emails":emails,
+        "phone_no": phone_no,
+        "address": address,
+    }
+    
+    return JsonResponse({'status':200,'message':'success','data':data,'extdata':{"title": title,
+        "creator": creator,
+        "date": date,
+        "desc": desc
+    }
+    })

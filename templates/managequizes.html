@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Quizes @ NestedForm</title>
     <link rel="stylesheet" href="{% static 'creator.css' %}">
+    <script src="{% static 'font.js' %}"></script>
     <style>
         h3{
             flex:0.5;
@@ -101,6 +102,20 @@
             flex: 3;
             justify-content: space-evenly;
         }
+        .showfilterbox{
+            position: fixed;
+            right: 20px;
+            background: white;
+            border-top: 7px solid #00bcd4;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 5px;
+            width: 250px;
+            top: 50px;
+        }
+        .showfilterbox h2{
+            font-size: 22px;
+        }
         @media(max-width:650px){
             .container,.child1{
                 width: 98%;
@@ -114,6 +129,9 @@
             .wrapperdivspar {
                 justify-content: space-between;
                 width: 100%;
+            }
+            .cpqc{
+                flex-direction: column;
             }
         }
         @media(max-width:450px){
@@ -137,11 +155,38 @@
 </head>
 
 <body>
+
+
+    <div class="showfilterbox">
+        <div style="display:flex;justify-items:center;align-items:center;">
+            <h2><span style="padding-top:5px;">Show Filters: </span></h2>
+            <div>
+                <label class="switch"><input type="checkbox" id="fcontrol"><span class="slider round"></span></label>
+            </div>
+        </div>
+
+        <div class="filtercontent" style="margin:5px auto;display:none;" id="fcon">
+            <h4>Sort by:
+            <select onchange="travelonthis(this.value);">
+                <option>Date Created</option>
+                <option>Author Name</option>
+                <option>Quiz Title</option>
+                <option>Showing res</option>
+                <option>Accepting res</option>
+                <option>Scheduled quiz</option>
+                <option>Non Scheduled quiz</option>
+            </select>
+        </h4>
+        </div>
+    </div>
     <div class="container">
-        {% for id,res,perm,acpperm,isres,oa,ot in data %}
+        {% for id,res,perm,acpperm,isres,oa,ot,date in data %}
         <div class="child1">
             <div class="constpart">
-                <p>Quiz Id: {{id}}</p>
+                <div class="cpqc" style="display:flex;justify-content:space-around;align-items:center;">
+                <p>Quiz Id: <a href="/fillquiz/{{id}}">Click here to see Quiz</a></p>
+                <p>Created on: {{date}}</p>
+                </div>
                 <div class="wrappertoggle pdiv" style="display: flex;justify-content: space-between;align-items: center;margin: 20px auto;">
 
                     <button style="background:green;text-align:center;flex:0.5;" type="button" onclick="createcsv('{{id}}')">Create Csv</button>
@@ -179,7 +224,8 @@
                     </div>
                 {% endif %}
                 <div class="btns-cntr" style="display:flex;justify-content:space-between;align-items:center;margin:10px auto;">
-                    <h3>Responses: <span id="tr-{{forloop.counter0}}">{{res}}</span></h3>
+                    <h3><a target="_blank" href="/managequizresponses/{{id}}">Responses <i class="fas fa-external-link-alt"></i>
+                        : <span id="tr-{{forloop.counter0}}">{{res}}</span></a></h3>
                     <div class="surdelbtns">
                     <button onclick="window.location.href='/survey/{{id}}'" style="background:purple;position:relative;padding: 6px 18px;">Survey<span style="position: absolute;top: 0;display: block;right: 0;font-size: 9px;">Beta</span></button>
                     <button type="button" onclick="mohitfuncdel('{{id}}',this);">Delete Quiz</button>
@@ -343,6 +389,25 @@
             alert("HTTP-Error: " + response.status);
         }
     }
-</script>
 
+    document.getElementById('fcontrol').addEventListener('change',function(){
+        thi = document.getElementById('fcon');
+        if(document.getElementById('fcontrol').checked){
+            thi.style.display = 'block';
+        }else{
+            thi.style.display = 'none';
+        }
+    })
+
+    function travelonthis(value){
+        const nvalue = value.replace(" ","_");
+        window.location.href = "/managequizzes/sortby="+nvalue;
+    }
+
+</script>
+<style>
+    .showfilterbox{
+        display: none;
+    }
+</style>
 </html>

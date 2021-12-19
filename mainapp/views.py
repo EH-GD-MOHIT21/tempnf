@@ -534,3 +534,82 @@ def handler_500(request,  exception=None):
     '''
     data = {}
     return render(request,'500error.html', data)
+
+
+def ExpendResponseForm(request,form_id):
+    try:
+        form = formpublicdata.objects.get(token=form_id)
+        if not request.user.is_authenticated or form.mail != request.user.email:
+            return redirect('/login')
+        return render(request,'manage_responses.html',{'is_quiz':False})
+    except:
+        return render(request,'confirm.html',{'message':'Quiz Not Exists.'})
+
+
+@csrf_exempt
+def SendFormResData(request,form_id):
+    
+    if not request.method == "POST" or not request.user.is_authenticated:
+        return JsonResponse({'status':406,'message':'Invalid Request','data':None})
+
+    try:
+        body = json.loads(request.body)
+        filters = body.get("filters")
+    except:
+        pass
+    
+    try:
+        quiz = formpublicdata.objects.get(token=form_id)
+        title = quiz.title
+        creator = quiz.creator
+        desc = quiz.desc
+        date = quiz.date
+        
+        if quiz.mail != request.user.email:
+            return JsonResponse({'status':403,'message':'You need permissions','data':None})
+        if filters == None:
+            resp = form_responses.objects.filter(token=form_id)
+        else:
+            if filters == "Time":
+                resp = form_responses.objects.filter(token=form_id)
+            elif filters == "Name":
+                resp = form_responses.objects.filter(token=form_id).order_by("name")
+            elif filters == "Phone":
+                resp = form_responses.objects.filter(token=form_id).order_by("phone_no")
+            elif filters == "Email":
+                resp = form_responses.objects.filter(token=form_id).order_by("email")
+            elif filters == "Address":
+                resp = form_responses.objects.filter(token=form_id).order_by("address")
+    except:
+        return JsonResponse({'status':404,'message':'quiz not exists','data':None})
+    
+    if not len(resp):
+        return JsonResponse({'status':200,'message':'success','data':None,'extdata':{
+        "title": title,
+        "creator": creator,
+        "date": date,
+        "desc": desc
+    }
+    })
+    names = []
+    emails = []
+    phone_no = []
+    address = []
+    for res in resp:
+        names.append(res.name)
+        emails.append(res.email)
+        phone_no.append(res.phone_no)
+        address.append(res.address)
+    data = {
+        "names":names,
+        "emails":emails,
+        "phone_no": phone_no,
+        "address": address,
+    }
+    
+    return JsonResponse({'status':200,'message':'success','data':data,'extdata':{"title": title,
+        "creator": creator,
+        "date": date,
+        "desc": desc
+    }
+    })

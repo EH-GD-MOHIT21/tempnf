@@ -14,4 +14,6 @@ urlpatterns = [
     path('deluserresponse',delete_response_api),
     path('updatequizperm',set_quiz_res_visibility_Api),
     path('changeacceptrespapi',set_accepting_respquiz_api),
+    path('managequizresponses/<quiz_id>',ExpendResponseQuiz),
+    path('getresquiz/<quiz_id>',SendQuizResData),
 ]

@@ -16,6 +16,8 @@ def RenderSurveyForQuiz(request,quiz_id):
         return redirect('/login')
     try:
         code = QuizManager.objects.get(token=quiz_id)
+        title = code.title
+        desc = code.desc
     except:
         return render(request,'confirm.html',{'message':'Quiz Not Exists with provided id.'})
     mcqqus = QuizMCQquestions.objects.filter(code=code)
@@ -58,17 +60,26 @@ def RenderSurveyForQuiz(request,quiz_id):
         temp1 = []
         for index,value in enumerate(sublist):
             if index != 0:
-                temp.append(round(temp[index-1]+(value/sum(sublist))*100,2))
+                if sum(sublist) != 0:
+                    temp.append(round(temp[index-1]+(value/sum(sublist))*100,2))
+                else:
+                    temp.append(round(temp[index-1]+(value/1.0)*100,2))
             else:
-                val = round((value/sum(sublist))*100,2)
+                if sum(sublist)!=0:
+                    val = round((value/sum(sublist))*100,2)
+                else:
+                    val = round((value/1.0)*100,2)
                 temp.append(val)
-            temp1.append(round((value/sum(sublist))*100,2))
+            if sum(sublist)!=0:
+                temp1.append(round((value/sum(sublist))*100,2))
+            else:
+                temp1.append(round((value/1.0)*100,2))
         render_this.append(temp)
         normal_list.append(temp1)
 
     questions = QuizMCQquestions.objects.filter(code=code)
 
-    return render(request,'nf_survey.html',{'data':zip(render_this,questions,normal_list,responses),'additional':False})
+    return render(request,'nf_survey.html',{'data':zip(render_this,questions,normal_list,responses),'additional':False,'title':title,'desc':desc})
 
 
 
@@ -77,6 +88,8 @@ def RenderSurveyForForm(request,form_id):
         return redirect('/login')
     try:
         code = formpublicdata.objects.get(token=form_id)
+        title = code.title
+        desc = code.desc
     except:
         return render(request,'confirm.html',{'message':'Form Not Exists with provided id.'})
 
@@ -125,16 +138,26 @@ def RenderSurveyForForm(request,form_id):
 
     render_this = []
     normal_list = []
+    print(final_data_Set)
     for sublist in final_data_Set:
         temp = []
         temp1 = []
         for index,value in enumerate(sublist):
             if index != 0:
-                temp.append(round(temp[index-1]+(value/sum(sublist))*100,2))
+                if sum(sublist)!=0:
+                    temp.append(round(temp[index-1]+(value/sum(sublist))*100,2))
+                else:
+                    temp.append(round(temp[index-1]+(value/1.0)*100,2))
             else:
-                val = round((value/sum(sublist))*100,2)
+                if sum(sublist)!=0:
+                    val = round((value/sum(sublist))*100,2)
+                else:
+                    val = round((value/1.0)*100,2)
                 temp.append(val)
-            temp1.append(round((value/sum(sublist))*100,2))
+            if sum(sublist)!=0:
+                temp1.append(round((value/sum(sublist))*100,2))
+            else:
+                temp1.append(round((value/1.0)*100,2))
         render_this.append(temp)
         normal_list.append(temp1)
     
@@ -143,7 +166,7 @@ def RenderSurveyForForm(request,form_id):
     print(ftpqus)
     print(ftpans)
     
-    return render(request,'nf_survey.html',{'data':zip(render_this,mcqqus,normal_list,responses),'additional':True,'ftpqus':ftpqus,'ftpans':ftpans})
+    return render(request,'nf_survey.html',{'data':zip(render_this,mcqqus,normal_list,responses),'additional':True,'ftpqus':ftpqus,'ftpans':ftpans,'title':title,'desc':desc})
 
 
 @csrf_exempt

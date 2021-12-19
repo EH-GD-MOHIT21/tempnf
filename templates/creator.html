@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Creator Page @ NestedForms.com</title>
     <link rel="stylesheet" href="{% static 'creator.css' %}">
+    <script src="{% static 'font.js' %}"></script>
     <style>
         h3{
             flex:0.5;
@@ -148,7 +149,7 @@
         {% for id,res,perm,acpperm,isres,oa,ot in data %}
         <div class="child1">
             
-            <p>Form Id: {{id}}</p>
+            <p>Form Id: <a href="/updateform/{{id}}" target="_blank">{{id}}</a></p>
 
             <div class="pdiv" style="display:flex;justify-content:space-between;align-items:center;margin:20px auto;">
                 <button type="button" onclick="createcsv('{{id}}')" style="background:green;flex:0.5;">Create Csv</button>
@@ -190,7 +191,7 @@
             {% endif %}
 
             <div class="btns-cntr" style="display:flex;justify-content:space-between;align-items:center;margin:10px auto;">
-                <h3>Responses: <span id="tr-{{forloop.counter0}}">{{res}}</span></h3>
+                <h3><a target="_blank" href="/manageformresponses/{{id}}">Responses <i class="fas fa-external-link-alt"></i> : <span id="tr-{{forloop.counter0}}">{{res}}</span></a></h3>
                     <div class="surdelbtns">
                 <button type="button" style="background:purple;" onclick="window.location.href='/surveyform/{{id}}'">Survey</button>
                 <button type="button" onclick="mohitfuncdel('{{id}}',this);">Delete Form</button>

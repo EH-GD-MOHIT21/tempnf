@@ -1,0 +1,184 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Form @ Nested Forms</title>
+    <script src="{% static 'font.js' %}"></script>
+    <!-- <script src="https://kit.fontawesome.com/e8425439af.js" crossorigin="anonymous"></script> -->
+    <link rel="stylesheet" href="{% static 'index.css' %}">
+    <script src="{% static 'jquary.js' %}"></script>
+    <style>
+        .delbtn {
+            display: block;
+            margin: 20px auto;
+            color: white;
+            background: crimson;
+            padding: 6px 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 1px solid gray;
+            border-radius: 6px;
+        }
+        
+        .ismulticorrect {
+            text-align: right;
+            margin-right: 7px;
+        }
+        
+        input[type="checkbox"] {
+            cursor: pointer;
+        }
+        
+        .delbtn,
+        .delbtn-1 {
+            display: block;
+            margin: 5px auto;
+            margin-top: 0;
+            color: white;
+            background: crimson;
+            padding: 6px 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 1px solid gray;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+    <form action="/setupdateform/{{id}}" method="POST">
+        {% csrf_token %}
+        <div class="container-headings">
+            <h1>NestedForms</h1>
+            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nam perferendis quam earum maiores perspiciatis labore placeat praesentium, totam vero fugiat voluptatibus minus pariatur enim sint voluptas quidem architecto esse! Est in corrupti
+                molestias exercitationem quaerat omnis libero asperiores accusantium aliquid?</p>
+        </div>
+
+        <div class="container">
+
+            <textarea name="formtitle" id="Form-title" value="{{title}}" required placeholder="Enter Form's Title Here">{{title}}</textarea>
+
+            <input type="text" name="creatorname" value="{{creator}}" required class="other-data" placeholder="Enter Creator's Name">
+
+            <input type="text" name="mail" value="{{email}}" class="other-data" required placeholder="Enter Creator's Mail Id" disabled>
+
+            <textarea name="formdesc" value="{{desc}}" id="Form-Desc" required placeholder="Enter Form's Description">{{desc}}</textarea>
+
+        </div>
+
+        {% for qus in mcqqus %}
+        <div class="container" style="text-align: left;padding:5px 10px;">
+            <h3 style="margin:5px;">{{qus.question}}</h3>
+            <p><i class="far fa-circle" aria-hidden="true" style="padding:5px;"></i>{{qus.option1}}</p>
+            <p><i class="far fa-circle" aria-hidden="true" style="padding:5px;"></i>{{qus.option2}}</p>
+            <p><i class="far fa-circle" aria-hidden="true" style="padding:5px;"></i>{{qus.option3}}</p>
+            <p><i class="far fa-circle" aria-hidden="true" style="padding:5px;"></i>{{qus.option4}}</p>
+            <button class="delbtn" id="{{forloop.counter0}}" onclick="managemcq(this)" type="button">Delete</button>
+        </div>
+        {% endfor %} {% for qus in ftpqus %}
+        <div class="container">
+            <h3>{{qus.question}}</h3>
+            <button class="delbtn-1" id="f-{{forloop.counter0}}" onclick="manageftp(this)" type="button">Delete</button>
+        </div>
+        {% endfor %}
+
+        <div id="outer">
+        </div>
+
+
+        <div class="btnsholder">
+            <button type="button" id="mcq-adder" class="mainbutton">Add Mcq</button>
+            <button type="Submit" class="mainbutton">Update Form</button>
+            <button type="button" id="ftp-adder" class="mainbutton">Add FillType</button>
+        </div>
+    </form>
+
+
+    <footer id="footer-tag">Developed By Mohit Satija &copy; 2021 | All Rights Reserved</footer>
+</body>
+<script src="{% static 'script.js' %}"></script>
+<script>
+    function funcadddate() {
+        if (document.getElementById('datesec').style.display == 'none') {
+            document.getElementById('datesec').style.display = 'block';
+        } else {
+            document.getElementById('datesec').style.display = 'none';
+        }
+    }
+    async function managemcq(elm) {
+        let response = await fetch('/delmcqform', {
+            credentials: 'include',
+            method: 'POST',
+            mode: 'same-origin',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "form_id": "{{id}}",
+                "qus_id": elm.id
+            })
+        })
+        if (response.ok) {
+            let json = await response.json();
+            let message = json["message"]
+            console.log(message);
+            if (message == "success") {
+                allbtns = document.getElementsByClassName('delbtn');
+                for (btns of allbtns) {
+                    if (parseInt(btns.id) > parseInt(elm.id)) {
+                        console.log("yes");
+                        document.getElementById(btns.id).id = btns.id - 1;
+                    }
+                }
+
+                elm.parentElement.remove();
+            }
+        } else {
+            alert("HTTP-Error: " + response.status);
+        }
+    }
+
+    async function manageftp(elm) {
+        let id = elm.id
+        id = id.replace("f-", "");
+        console.log(id);
+        let response = await fetch('/delftpform', {
+            credentials: 'include',
+            method: 'POST',
+            mode: 'same-origin',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "form_id": "{{id}}",
+                "qus_id": id
+            })
+        })
+        if (response.ok) {
+            let json = await response.json();
+            let message = json["message"]
+            console.log(message);
+            if (message == "success") {
+                allbtns = document.getElementsByClassName('delbtn-1');
+                for (btns of allbtns) {
+                    if (parseInt(btns.id.replace("f-", "")) > parseInt(id)) {
+                        console.log("f-" + (btns.id.replace("f-", "") - 1));
+                        document.getElementById(btns.id).id = "f-" + (btns.id.replace("f-", "") - 1);
+                    }
+                }
+
+                elm.parentElement.remove();
+            }
+        } else {
+            alert("HTTP-Error: " + response.status);
+        }
+    }
+</script>
+
+</html>
