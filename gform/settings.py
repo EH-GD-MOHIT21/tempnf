@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-y8^-=sykwrl#8h(fu#d3dtg_(2$z@ips1&9lnl@%(q3_vndxbc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','nestedform.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1','nestedform.herokuapp.com','mohitsatija.me']
 
 
 # Application definition
